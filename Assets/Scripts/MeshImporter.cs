@@ -14,6 +14,7 @@ class MeshImporter {
     public static void import(string path, out List<Vector3> vertices, out List<int> tetrahedra) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out vertices, out tetrahedra);
+        Debug.Log(".mesh import: " + vertices.Count + " verts, " + tetrahedra.Count / 4 + " tetrahedra.");
     }
 
     private static void parse(string[] meshFileLines, out List<Vector3> vertices, out List<int> tetrahedra) {
@@ -95,6 +96,8 @@ class MeshImporter {
                     break;
             }
         }
+        //Debug.Log(".mesh import: " + vertices.Count + " verts, " + tetrahedra.Count/4 + " tetrahedra.");
+
         // check for correctnes
         if (vertexCount != vertices.Count)
             Debug.LogError("Vertex count does not match count from file!" + vertexCount + " " + vertices.Count);

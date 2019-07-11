@@ -7,15 +7,17 @@ public class ObjImporter{
     public static void import(string path, out List<Vector3> verts, out List<int> tris) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out verts, out tris);
+        Debug.Log(".obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
     }
 
     private static void parse(string[] allLines, out List<Vector3> verts, out List<int> tris) {
         verts = new List<Vector3>();
         tris = new List<int>();
 
+
         float[] vertexInfo = { 0, 0, 0 };
         string[] infoString = { };
-        Debug.Log("line count " + allLines.Length);
+        //Debug.Log("line count " + allLines.Length);
         foreach (string line in allLines) {
             if (line.StartsWith("v")) {
                 infoString = line.Substring(2).Split();
@@ -31,7 +33,6 @@ public class ObjImporter{
                 }
             }
         }
-        Debug.Log("vert count " + verts.Count);
-        Debug.Log("tri count " + tris.Count);
+        //Debug.Log("vert count " + verts.Count+ ", tri count " + tris.Count / 3);
     }
 }

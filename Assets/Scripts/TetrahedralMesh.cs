@@ -12,16 +12,11 @@ public class TetrahedralMesh : MonoBehaviour {
     private int surfaceTriangleCount;
 
     private int[] surfaceVertexIndeces;
-    private Mesh surfaceMesh;
 
     private Constraint[] constraints;
 
     [SerializeField] private GameObject tetMeshGameObject;
     [SerializeField] private Material tetMeshMaterial;
-
-    private void Start() {
-        surfaceMesh = new Mesh();
-    }
 
     public void setTetMeshData(List<Vector3> vertices, List<int> tetrahedra, List<Vector3> surfaceVertices, List<int> surfaceTriangles) {
         //tet mesh info
@@ -32,24 +27,14 @@ public class TetrahedralMesh : MonoBehaviour {
         //surface info
         this.surfaceVertices = surfaceVertices.ToArray();
         this.surfaceTriangles = surfaceTriangles.ToArray();
-        //set up surface mesh
-        surfaceMesh.vertices = this.surfaceVertices;
-        surfaceMesh.triangles = this.surfaceTriangles;
-        createSurfaceMeshGO();
+        //gameObject.GetComponent<SurfaceDrawer>().setInfo(surfaceVertices, surfaceTriangles);
+
         //index surface indices
         surfaceVertexIndeces = indexSubsetVertices(surfaceVertices, vertices).ToArray();
     }
 
     public Vector3[] getVertices() {
         return vertices;
-    }
-
-    private void createSurfaceMeshGO() {
-        MeshFilter filter = tetMeshGameObject.AddComponent<MeshFilter>();
-        filter.mesh = surfaceMesh;
-        MeshRenderer renderer = tetMeshGameObject.AddComponent<MeshRenderer>();
-        renderer.material = tetMeshMaterial;
-        //surfaceMesh.RecalculateNormals();
     }
 
     // Finds all vertices from a set in its superset and saves their indices
