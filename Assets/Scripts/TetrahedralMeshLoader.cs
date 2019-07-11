@@ -8,7 +8,7 @@ enum LineType {
     VERTICES,
     TETRAHEDRA
 }
-
+/// Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
 public class TetrahedralMeshLoader : MonoBehaviour {
     private TetrahedralMesh tetMesh;
 
