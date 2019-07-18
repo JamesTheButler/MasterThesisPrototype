@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-class MeshImporter {
+public class MeshImporter {
     enum LineType {
         NONE,
         VERTICES,

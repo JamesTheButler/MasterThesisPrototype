@@ -13,28 +13,38 @@ public class TetrahedralMesh : MonoBehaviour {
 
     private int[] surfaceVertexIndeces;
 
-    private Constraint[] constraints;
+    private List<Constraint> constraints;
 
     [SerializeField] private GameObject tetMeshGameObject;
     [SerializeField] private Material tetMeshMaterial;
+
+    public Vector3[] getVertices() { return vertices; }
+    public List<Constraint> getConstraints() { return constraints; }
 
     public void setTetMeshData(List<Vector3> vertices, List<int> tetrahedra, List<Vector3> surfaceVertices, List<int> surfaceTriangles) {
         //tet mesh info
         this.vertices = vertices.ToArray();
         this.tetrahedra = tetrahedra.ToArray();
         tetCount = tetrahedra.Count / 4;
-        //TODO: create constraints
         //surface info
         this.surfaceVertices = surfaceVertices.ToArray();
         this.surfaceTriangles = surfaceTriangles.ToArray();
+        generateSurfaceMeshObject();
         //gameObject.GetComponent<SurfaceDrawer>().setInfo(surfaceVertices, surfaceTriangles);
-
         //index surface indices
         surfaceVertexIndeces = indexSubsetVertices(surfaceVertices, vertices).ToArray();
+        //constraints
+        constraints = generateDistanceConstraints();
     }
 
-    public Vector3[] getVertices() {
-        return vertices;
+    private void generateSurfaceMeshObject() {
+        Mesh mesh = new Mesh();
+        MeshFilter filter = tetMeshGameObject.AddComponent<MeshFilter>();
+        filter.mesh = mesh;
+        MeshRenderer renderer = tetMeshGameObject.AddComponent<MeshRenderer>();
+        renderer.material = tetMeshMaterial;
+        mesh.vertices = surfaceVertices;
+        mesh.triangles = surfaceTriangles;
     }
 
     // Finds all vertices from a set in its superset and saves their indices
@@ -46,17 +56,17 @@ public class TetrahedralMesh : MonoBehaviour {
                 indeces.Add(superSet.IndexOf(vertex));
             }
         }
-        Debug.Log(indeces.Count + "/" + subSet.Count + " surface vertex indeces found");
+        Debug.Log(indeces.Count + "/" + subSet.Count + " surface vertices indexed.");
         return indeces;
     }
 
-    private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {
+   /*private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {
         switch (type) {
             case ConstraintType.DISTANCE:
                 generateDistanceConstraints();
                 break;
         }
-    }
+    }*/
 
     private List<Constraint> generateDistanceConstraints() {
         Vector3[] tetVertices = new Vector3[4];
@@ -79,4 +89,5 @@ public class TetrahedralMesh : MonoBehaviour {
         }
         return distanceConstraints;
     }
+
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 [System.Obsolete("We do not need normals any more.")]
-class NormalDrawer :MonoBehaviour {
+public class NormalDrawer :MonoBehaviour {
     public GameObject go;
     public Material material;
     public Color color = Color.blue;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-class SurfaceDrawer :MonoBehaviour {
+public class SurfaceDrawer :MonoBehaviour {
     private List<Vector3> vertices;
     private List<int> tris;
     private bool infoIsSet;

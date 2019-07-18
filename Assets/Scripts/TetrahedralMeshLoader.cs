@@ -36,6 +36,12 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         MeshImporter.import(filePath, out vertices, out tetrahedra);
         ObjImporter.import(surfaceFilePath, out surfaceVertices, out surfaceTriangles);
         //write data to TetMesh
-        tetMesh.setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
+        // TODO: tetMesh == null is true. why?
+        //tetMesh.setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
+        GetComponent<TetrahedralMesh>().setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
+
+        DllInterface.initVertices(vertices.ToArray());
+        DllInterface.initCollilders(ColliderManager.getColliderList().ToArray());
+        DllInterface.initConstraints(tetMesh.getConstraints().ToArray());
     }
 }

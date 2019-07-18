@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-class ObjectToMeshLoader : MonoBehaviour {
+public class ObjectToMeshLoader : MonoBehaviour {
     [SerializeField] private GameObject meshGO;
     [SerializeField] private Material meshMat;
 
