@@ -9,13 +9,13 @@ public class ObjImporter{
         parse(allLines, out verts, out tris);
         calculateNormals(verts, tris, out normals);
 
-        Debug.Log(".obj import: " + verts.Count + " verts, " + tris.Count / 3 + " tris.");
+        Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count / 3 + " tris.");
     }
 
     public static void import(string path, out List<Vector3> verts, out List<int> tris) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out verts, out tris);
-        Debug.Log(".obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
+        Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
     }
 
     private static void parse(string[] allLines, out List<Vector3> verts, out List<int> tris) {

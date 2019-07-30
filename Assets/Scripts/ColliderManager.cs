@@ -19,14 +19,16 @@ public class ColliderManager : MonoBehaviour {
         return singleton.colliders;
     }
 
-    public static void getColliderData(out Vector3[] colliderPositions, out Vector3[] colliderSizes) {
+    public static void getColliderData(out Vector3[] colliderPositions, out Vector3[] colliderSizes, out ColliderType[] colliderTypes) {
         int collCount = singleton.colliders.Count;
         colliderPositions = new Vector3[collCount];
         colliderSizes = new Vector3[collCount];
-        
-        for(int i=0; i< collCount; i++) {
+        colliderTypes = new ColliderType[collCount];
+
+        for (int i=0; i< collCount; i++) {
             colliderPositions[i] = singleton.colliders[i].getPosition();
             colliderSizes[i] = singleton.colliders[i].getSize();
+            colliderTypes[i] = singleton.colliders[i].getType();
         }
     }
 }

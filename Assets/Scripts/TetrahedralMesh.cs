@@ -21,6 +21,26 @@ public class TetrahedralMesh : MonoBehaviour {
     public Vector3[] getVertices() { return vertices; }
     public List<Constraint> getConstraints() { return constraints; }
 
+    /// <summary>
+    /// Returns vertices with global transform.
+    /// </summary>
+    public Vector3[] getGlobalVertices() {
+        Vector3[] globalVerts = (Vector3[])vertices.Clone();
+        Vector3 position = tetMeshGameObject.transform.position;
+        Quaternion rotation = tetMeshGameObject.transform.rotation;
+
+        for(int i = 0; i < globalVerts.Length; i++) {
+            globalVerts[i] = rotation * globalVerts[i];
+        }
+        for (int i = 0; i < globalVerts.Length; i++) {
+            globalVerts[i] += position;
+        }
+        return globalVerts;
+    }
+
+    /// <summary>
+    /// Sets all data to tet mesh.
+    /// </summary>
     public void setTetMeshData(List<Vector3> vertices, List<int> tetrahedra, List<Vector3> surfaceVertices, List<int> surfaceTriangles) {
         //tet mesh info
         this.vertices = vertices.ToArray();
@@ -30,13 +50,15 @@ public class TetrahedralMesh : MonoBehaviour {
         this.surfaceVertices = surfaceVertices.ToArray();
         this.surfaceTriangles = surfaceTriangles.ToArray();
         generateSurfaceMeshObject();
-        //gameObject.GetComponent<SurfaceDrawer>().setInfo(surfaceVertices, surfaceTriangles);
         //index surface indices
         surfaceVertexIndeces = indexSubsetVertices(surfaceVertices, vertices).ToArray();
         //constraints
         constraints = generateDistanceConstraints();
     }
 
+    /// <summary>
+    /// Generates unity mesh with the surface vertices of the tet mesh.
+    /// </summary>
     private void generateSurfaceMeshObject() {
         Mesh mesh = new Mesh();
         MeshFilter filter = tetMeshGameObject.AddComponent<MeshFilter>();
@@ -47,7 +69,9 @@ public class TetrahedralMesh : MonoBehaviour {
         mesh.triangles = surfaceTriangles;
     }
 
-    // Finds all vertices from a set in its superset and saves their indices
+    /// <summary>
+    ///  Finds all vertices from a set in its superset and saves their indices.
+    /// </summary>
     private List<int> indexSubsetVertices(List<Vector3> subSet, List<Vector3> superSet) {
         List<int> indeces = new List<int>();
         //find all surface vertices in all vertices
@@ -56,7 +80,7 @@ public class TetrahedralMesh : MonoBehaviour {
                 indeces.Add(superSet.IndexOf(vertex));
             }
         }
-        Debug.Log(indeces.Count + "/" + subSet.Count + " surface vertices indexed.");
+        Debug.Log("[INFO] "+indeces.Count + "/" + subSet.Count + " surface vertices indexed.");
         return indeces;
     }
 
@@ -68,6 +92,9 @@ public class TetrahedralMesh : MonoBehaviour {
         }
     }*/
 
+    /// <summary>
+    /// Generates distance constrains. Creates 6 constraints per tetrahedron and sets rest distance to current distance.
+    /// </summary>
     private List<Constraint> generateDistanceConstraints() {
         Vector3[] tetVertices = new Vector3[4];
         int[] tetVertexIDs = new int[4];
@@ -89,5 +116,4 @@ public class TetrahedralMesh : MonoBehaviour {
         }
         return distanceConstraints;
     }
-
 }

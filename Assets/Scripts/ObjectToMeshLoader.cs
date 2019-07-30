@@ -31,7 +31,10 @@ public class ObjectToMeshLoader : MonoBehaviour {
         normalDrawer.material = meshMat;*/
     }
 
-    private Mesh duplicateMeshWithIndividualVertices(Mesh oldMesh) {
+    /// <summary>
+    /// Generates individual vertices per mesh triangle to allow the flat shading via unity shader.
+    /// </summary>
+   /* private Mesh duplicateMeshWithIndividualVertices(Mesh oldMesh) {
         Mesh newMesh = new Mesh();
         List<Vector3> oldVerts = new List<Vector3>(oldMesh.vertices);
         List<int> oldTris = new List<int>(oldMesh.triangles);
@@ -40,7 +43,6 @@ public class ObjectToMeshLoader : MonoBehaviour {
         List<Vector3> newNormals = new List<Vector3>();
         //copy vertices and tris
 
-
         //generate normals
         calculateNormals(newVerts, newTris, out newNormals);
         //write and return new mesh info
@@ -48,9 +50,14 @@ public class ObjectToMeshLoader : MonoBehaviour {
         newMesh.triangles = newTris.ToArray();
         newMesh.normals = newNormals.ToArray();
         return newMesh;
-    }
+    }*/
 
-    private static void calculateNormals(List<Vector3> verts, List<int> tris, out List<Vector3> normals) {
+    //TODO: implement correctly: determine (radomly or look towards center of mass) normal direction once and then proceed with that normal
+    //TODO: reqruies flip normals functionality (in case initial normal direction is false)
+    /// <summary>
+    /// Calculates normals of a mesh.
+    /// </summary>
+    /*private static void calculateNormals(List<Vector3> verts, List<int> tris, out List<Vector3> normals) {
         normals = new List<Vector3>();
         //initialize empty normals
         for (int i = 0; i < verts.Count; i++) {
@@ -71,5 +78,5 @@ public class ObjectToMeshLoader : MonoBehaviour {
                 normals[vertexId] = faceNormal;
             }
         }
-    }
+    }*/
 }

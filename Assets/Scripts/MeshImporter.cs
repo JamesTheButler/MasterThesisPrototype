@@ -14,7 +14,7 @@ public class MeshImporter {
     public static void import(string path, out List<Vector3> vertices, out List<int> tetrahedra) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out vertices, out tetrahedra);
-        Debug.Log(".mesh import: " + vertices.Count + " verts, " + tetrahedra.Count / 4 + " tetrahedra.");
+        Debug.Log("[INFO] .mesh import: " + vertices.Count + " verts, " + tetrahedra.Count / 4 + " tetrahedra.");
     }
 
     private static void parse(string[] meshFileLines, out List<Vector3> vertices, out List<int> tetrahedra) {
