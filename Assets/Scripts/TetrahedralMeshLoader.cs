@@ -11,7 +11,7 @@ enum LineType {
 /// Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
 public class TetrahedralMeshLoader : MonoBehaviour {
     private TetrahedralMesh tetMesh;
-    [SerializeField] private MeshBuilder meshBuilder;
+//    [SerializeField] private MeshBuilder meshBuilder;
 
     private void Start() {
         tetMesh = GetComponent<TetrahedralMesh>();
@@ -42,7 +42,7 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         GetComponent<TetrahedralMesh>().setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
 
         //for debugging
-        meshBuilder.init(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
+    //    meshBuilder.init(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
 
         DllInterface dllInterface = DllInterface.getSingleton();
         dllInterface.initData();

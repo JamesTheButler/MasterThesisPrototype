@@ -1,36 +1,38 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum ColliderType {
     NONE = 0,
     BOX = 1
 }
 
+public struct MyColliderData {
+    public Vector3 position;
+    public Vector3 size;
+    public ColliderType type;
+}
+
 public class MyCollider : MonoBehaviour {
-    private Vector3 position;
-    private Vector3 size;
+    private MyColliderData collData;
+    public MyColliderData getColliderData() { return collData; }
     [SerializeField]private ColliderType type;
 
-    public Vector3 getPosition() { return position; }
-    public Vector3 getSize() { return size; }
-    public ColliderType getType() { return type; }
+    public Vector3 getPosition() { return collData.position; }
+    public Vector3 getSize() { return collData.size; }
+    /// <summary> Returns the colliders type (i.e. box, sphere, etc). </summary>
+    public ColliderType getType() { return collData.type; }
 
     private void Start() {
         setInfo();
         registerSelf();
     }
-
-    protected virtual void setInfo() {
-        position = gameObject.transform.position;
-        size = gameObject.transform.localScale;
-        type = ColliderType.BOX;
+    
+    private void setInfo() {
+        collData.position = gameObject.transform.localPosition;
+        collData.size = gameObject.transform.localScale;
+        collData.type = type;
     }
 
     private void registerSelf() {
         ColliderManager.registerCollider(this);
-    }
-
-    internal int getColliderType() {
-        throw new NotImplementedException();
     }
 }

@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class DllInterface : MonoBehaviour {
     [SerializeField] private TetrahedralMesh tetMesh;
     [SerializeField] private Text collisionCountText;
-    [SerializeField] private MeshBuilder meshBuilder;
+//    [SerializeField] private MeshBuilder meshBuilder;
+//    [SerializeField] private ColliderSetter collSetter;
 
     private static DllInterface singleton;
     public static DllInterface getSingleton() { return singleton; }
@@ -25,20 +26,20 @@ public class DllInterface : MonoBehaviour {
     IntPtr sizeArrPtr;
 
     /// DLL Methods
+    // setters
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setVertices(Vector3[] verts, int vertexCount);
     [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getVertices(IntPtr verts);
-    [DllImport("PlasticDeformationDll")]
     private static extern void dll_setColliders(Vector3[] colliderPositions, Vector3[] colliderSizes, ColliderType[] colliderTypes, int colliderCount);
+    //getters
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getColliders(IntPtr positions, IntPtr sizes, IntPtr types);
     [DllImport("PlasticDeformationDll")]
-    private static extern int dll_getVertexCountInColliders();
+    private static extern void dll_getVertices(IntPtr verts);
     [DllImport("PlasticDeformationDll")]
-    private static extern void dll_setTest(out int resultVerts, out int resultColls, out int resultConstraints);
-    [DllImport("PlasticDeformationDll")]
-    private static extern int dll_returnCollType();
+    private static extern int dll_getCollisionCount();
+    // calculations
+
 
     private void Start() {
         singleton = this;
@@ -48,10 +49,11 @@ public class DllInterface : MonoBehaviour {
         //physicsCalculations();
         if (isReadyForCollisionChecks) {
             dll_setVertices(tetMesh.getGlobalVertices(), tetMesh.getGlobalVertices().Length);
-
-            collisionCountText.text = "Collision Count: "+dll_getVertexCountInColliders();
+            collisionCountText.text = "Collision Count: "+dll_getCollisionCount();
             //getCollisionResult();
-            meshBuilder.setVertexData(getVerticesFromDll());
+        //    if (!collSetter.isSet)
+        //        collSetter.setInfo(getCollidersFromDll());
+        //    meshBuilder.setVertexData(getVerticesFromDll());
         }
 	}
 
@@ -67,9 +69,6 @@ public class DllInterface : MonoBehaviour {
 
     private void updateVertices() {
         Vector3[] vertices = singleton.tetMesh.getGlobalVertices();
-        Debug.Log("DllInterface.updateVertices: 1st vert: " + vertices[0]);
-        Debug.Log("DllInterface.updateVertices: 10st vert: " + vertices[10]);
-        Debug.Log("DllInterface.updateVertices: 100t vert: " + vertices[100]);
         dll_setVertices(vertices, vertices.Length);
     }
 
@@ -84,14 +83,8 @@ public class DllInterface : MonoBehaviour {
         //TODO: implement
     }
     
-    public void testDataSetting() {
-        int vertCount, collCount, constCount;
-        dll_setTest(out vertCount, out collCount, out constCount);
-        Debug.Log("set Test -- vert count: " + vertCount + "coll count: " + collCount + "constraint count: " + constCount);
-    }
-
     public void getCollisionResult() {
-        Debug.Log("There are "+dll_getVertexCountInColliders()+" vertices colliding with colliders");
+        Debug.Log("There are "+dll_getCollisionCount()+" vertices colliding with colliders");
     }
 
 
@@ -105,9 +98,9 @@ public class DllInterface : MonoBehaviour {
         return resultArray;
     }
 
-    public void getCollidersFromDll() {
+    public MyColliderData[] getCollidersFromDll() {
         int collCount = ColliderManager.getColliderList().Count;
-        MyCollider[] dllColliders = new MyCollider[collCount];
+        MyColliderData[] dllColliders = new MyColliderData[collCount];
         // initialize handles and pointers
         GCHandle posArrHandle;
         IntPtr posArrPtr;
@@ -129,12 +122,14 @@ public class DllInterface : MonoBehaviour {
         //retrieve data from dll
         dll_getColliders(posArrPtr, sizeArrPtr, typeArrPtr);
 
-        Vector3[] poss, sizes;
-        ColliderType[] types;
-        ColliderManager.getColliderData(out poss, out sizes, out types);
+        MyColliderData collData;
+        for (int i=0; i< collCount; i++) {
+            collData.position = collPositions[i];
+            collData.size = collSizes[i];
+            collData.type = collTypes[i];
 
-        Debug.Log("collider positions: " + Enumerable.SequenceEqual(poss, collPositions));
-        Debug.Log("collider sizes: " + Enumerable.SequenceEqual(sizes, collSizes));
-        Debug.Log("collider types: " + Enumerable.SequenceEqual(types, collTypes));
+            dllColliders[i] = collData;
+        }
+        return dllColliders;
     }
 }
