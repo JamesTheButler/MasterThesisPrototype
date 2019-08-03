@@ -614,7 +614,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57978710e218c504f9365124f0213fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshBuilder: {fileID: 0}
 --- !u!114 &154416650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5495,8 +5494,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tetMesh: {fileID: 837177632}
   collisionCountText: {fileID: 1151832707}
-  meshBuilder: {fileID: 741576886}
-  collSetter: {fileID: 741576887}
 --- !u!4 &815992157
 Transform:
   m_ObjectHideFlags: 0
@@ -5556,7 +5553,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57978710e218c504f9365124f0213fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshBuilder: {fileID: 0}
 --- !u!114 &837177632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7358,7 +7354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1235294089
 Transform:
   m_ObjectHideFlags: 0
