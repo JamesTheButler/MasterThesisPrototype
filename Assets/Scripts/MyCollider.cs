@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum ColliderType {
     NONE = 0,
@@ -30,6 +31,10 @@ public class MyCollider : MonoBehaviour {
         collData.position = gameObject.transform.localPosition;
         collData.size = gameObject.transform.localScale;
         collData.type = type;
+    }
+
+    public void setType(ColliderType type) {
+        this.type = type;
     }
 
     private void registerSelf() {

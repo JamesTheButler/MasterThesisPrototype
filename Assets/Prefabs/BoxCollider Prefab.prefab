@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4971076460374226}
   - component: {fileID: 33345060686853626}
   - component: {fileID: 23025234340770772}
+  - component: {fileID: 114426301805429562}
   m_Layer: 0
   m_Name: BoxCollider Prefab
   m_TagString: Untagged
@@ -83,3 +84,15 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1330114423822012}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &114426301805429562
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1330114423822012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d8c44e1d8537624fbf81ec76a3dab13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0

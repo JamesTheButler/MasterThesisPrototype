@@ -10,11 +10,10 @@ enum LineType {
 }
 /// Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
 public class TetrahedralMeshLoader : MonoBehaviour {
-    private TetrahedralMesh tetMesh;
-//    [SerializeField] private MeshBuilder meshBuilder;
+    [SerializeField] private TetrahedralMesh tetMesh;
+    [SerializeField] private MeshBuilder meshBuilder;
 
     private void Start() {
-        tetMesh = GetComponent<TetrahedralMesh>();
         if (tetMesh == null)
             Debug.LogError("No TetrahedralMesh Component found.");
     }
@@ -37,18 +36,18 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         MeshImporter.import(filePath, out vertices, out tetrahedra);
         ObjImporter.import(surfaceFilePath, out surfaceVertices, out surfaceTriangles);
         //write data to TetMesh
-        //TODO: tetMesh == null is true. why?
-        //tetMesh.setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
-        GetComponent<TetrahedralMesh>().setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
+        tetMesh.setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
 
-        //for debugging
-    //    meshBuilder.init(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
+        //DEBUGGING
+        meshBuilder.init(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
 
+        // set up dll
         DllInterface dllInterface = DllInterface.getSingleton();
         dllInterface.initData();
         dllInterface.setReadyForCollisionChecks(true);
         dllInterface.getCollidersFromDll();
-        dllInterface.getVerticesFromDll();
-        //dllInterface.getCollisionResult();
+
+        //DEBUGGING
+        meshBuilder.setVertexData(dllInterface.getVerticesFromDll());
     }
 }

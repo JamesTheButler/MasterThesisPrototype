@@ -17,6 +17,7 @@ public class TetrahedralMesh : MonoBehaviour {
 
     [SerializeField] private GameObject tetMeshGameObject;
     [SerializeField] private Material tetMeshMaterial;
+    [SerializeField] private GameObject surfaceMeshGO;
 
     public Vector3[] getVertices() { return vertices; }
     public List<Constraint> getConstraints() { return constraints; }
@@ -57,13 +58,21 @@ public class TetrahedralMesh : MonoBehaviour {
     }
 
     /// <summary>
+    /// Returns the translation and rotation of the tet mesh using the parameters as output.
+    /// </summary>
+    public void getTransforms(out Vector3 translation, out Quaternion rotation) {
+        translation = tetMeshGameObject.transform.position;
+        rotation = tetMeshGameObject.transform.rotation;
+    }
+
+    /// <summary>
     /// Generates unity mesh with the surface vertices of the tet mesh.
     /// </summary>
     private void generateSurfaceMeshObject() {
         Mesh mesh = new Mesh();
-        MeshFilter filter = tetMeshGameObject.AddComponent<MeshFilter>();
+        MeshFilter filter = surfaceMeshGO.AddComponent<MeshFilter>();
         filter.mesh = mesh;
-        MeshRenderer renderer = tetMeshGameObject.AddComponent<MeshRenderer>();
+        MeshRenderer renderer = surfaceMeshGO.GetComponent<MeshRenderer>();
         renderer.material = tetMeshMaterial;
         mesh.vertices = surfaceVertices;
         mesh.triangles = surfaceTriangles;

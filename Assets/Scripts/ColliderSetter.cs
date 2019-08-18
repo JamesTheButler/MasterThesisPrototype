@@ -15,6 +15,7 @@ public class ColliderSetter : MonoBehaviour {
                     GameObject go = Instantiate(boxColliderPrefab, colliderGroup.transform);
                     go.transform.position = colliderData[i].position;
                     go.transform.localScale = colliderData[i].size;
+                    go.GetComponent<MyCollider>().setType(colliderData[i].type);
                     break;
             }
         }
