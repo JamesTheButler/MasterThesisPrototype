@@ -1,17 +1,36 @@
 ﻿public enum ConstraintType {
-    DISTANCE,
+    DEFAULT = -1,
+    DISTANCE = 0,
+    BENDING = 1,
+    VOLUME = 2
 }
 
 public struct Constraint {
     int[] vertices;
     float restValue;
     float currentValue;
-    ConstraintType type;
+    ConstraintType constraintType;
 
     public Constraint(int[] vertices, float restValue, ConstraintType type) {
         this.vertices = vertices;
         this.restValue = restValue;
-        currentValue = restValue;
-        this.type = type;
+        this.currentValue = restValue;
+        this.constraintType = type;
+    }
+
+    public int[] getVertices() {
+        return vertices;
+    }
+
+    public float getRestValue() {
+        return restValue;
+    }
+
+    public float getCurrentValue() {
+        return currentValue;
+    }
+
+    public ConstraintType getConstraintType() {
+        return constraintType;
     }
 }

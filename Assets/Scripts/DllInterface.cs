@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +22,8 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setColliders(Vector3[] colliderPositions, Vector3[] colliderSizes, ColliderType[] colliderTypes, int colliderCount);
     [DllImport("PlasticDeformationDll")]
-    private static extern void dll_setConstraints();
+    private static extern void dll_setConstraints(  int[] vertexIds, int[] startingVertexIdArrayIndeces, int[] vertexIdArrayLengths, 
+                                                    float[] currentValue, float[] restValue, ConstraintType[] type, int constraintCount);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setTetMeshTransforms(Vector3 translation, Quaternion rotation);
     //getters
@@ -69,7 +71,7 @@ public class DllInterface : MonoBehaviour {
 
     public void initData() {
         updateVertices();
-        updateCollilders();
+        updateColliders();
         updateConstraints();
     }
 
@@ -78,7 +80,7 @@ public class DllInterface : MonoBehaviour {
         dll_setVertices(vertices, vertices.Length);
     }
 
-    private void updateCollilders() {
+    private void updateColliders() {
         Vector3[] collPos, collSizes;
         ColliderType[] collTypes;
         ColliderManager.getColliderData(out collPos, out collSizes, out collTypes);
@@ -86,7 +88,33 @@ public class DllInterface : MonoBehaviour {
     }
 
     private void updateConstraints() {
-        //TODO: implement
+        List<int> vertexIds = new List<int>();
+        List<int> startingIndeces = new List<int>();
+        List<int> vertexIdArrayLengths = new List<int>();
+        List<float> currentValues = new List<float>();
+        List<float> restValues = new List<float>();
+        List<ConstraintType> constraintTypes = new List<ConstraintType>();
+        int constraintCount = 0;
+
+        // set up constraint info lists
+        List<Constraint> constraints = tetMesh.getConstraints();
+        constraintCount = constraints.Count;
+        foreach(Constraint constraint in constraints) {
+            int[] verts = constraint.getVertices();
+            int length = verts.Length;
+            //set starting index
+            startingIndeces.Add(vertexIds.Count);
+            //set length
+            vertexIdArrayLengths.Add(length);
+            //set verts
+            for (int i=0; i<length; i++) {
+                vertexIds.Add(verts[i]);
+            }
+            currentValues.Add(constraint.getCurrentValue());
+            restValues.Add(constraint.getRestValue());
+            constraintTypes.Add(constraint.getConstraintType());
+        }
+        dll_setConstraints(vertexIds.ToArray(), startingIndeces.ToArray(), vertexIdArrayLengths.ToArray(), currentValues.ToArray(), restValues.ToArray(), constraintTypes.ToArray(), constraintCount);
     }
     
     public void getCollisionResult() {
