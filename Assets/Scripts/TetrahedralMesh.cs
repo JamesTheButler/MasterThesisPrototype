@@ -7,14 +7,15 @@ public class TetrahedralMesh : MonoBehaviour {
     private int[] tetrahedra;
     private int tetCount; 
 
-    private Vector3[] surfaceVertices;
+    //private Vector3[] surfaceVertices;
     private int[] surfaceTriangles;
     private int surfaceTriangleCount;
-
     private int[] surfaceVertexIndeces;
 
     private List<Constraint> constraints;
 
+    [SerializeField] private GameObject carGO;
+    [SerializeField] private GameObject outerCircleGO;
     [SerializeField] private GameObject tetMeshGameObject;
     [SerializeField] private Material tetMeshMaterial;
     [SerializeField] private GameObject surfaceMeshGO;
@@ -25,7 +26,7 @@ public class TetrahedralMesh : MonoBehaviour {
     /// <summary>
     /// Returns vertices with global transform.
     /// </summary>
-    public Vector3[] getGlobalVertices() {
+    /*public Vector3[] getGlobalVertices() {
         Vector3[] globalVerts = (Vector3[])vertices.Clone();
         Vector3 position = tetMeshGameObject.transform.position;
         Quaternion rotation = tetMeshGameObject.transform.rotation;
@@ -37,7 +38,7 @@ public class TetrahedralMesh : MonoBehaviour {
             globalVerts[i] += position;
         }
         return globalVerts;
-    }
+    }*/
 
     /// <summary>
     /// Sets all data to tet mesh.
@@ -48,11 +49,11 @@ public class TetrahedralMesh : MonoBehaviour {
         this.tetrahedra = tetrahedra.ToArray();
         tetCount = tetrahedra.Count / 4;
         //surface info
-        this.surfaceVertices = surfaceVertices.ToArray();
+       //this.surfaceVertices = surfaceVertices.ToArray();
         this.surfaceTriangles = surfaceTriangles.ToArray();
-        generateSurfaceMeshObject();
         //index surface indices
         surfaceVertexIndeces = indexSubsetVertices(surfaceVertices, vertices).ToArray();
+        generateSurfaceMeshObject();
         //constraints
         constraints = generateDistanceConstraints();
     }
@@ -60,9 +61,24 @@ public class TetrahedralMesh : MonoBehaviour {
     /// <summary>
     /// Returns the translation and rotation of the tet mesh using the parameters as output.
     /// </summary>
-    public void getTransforms(out Vector3 translation, out Quaternion rotation) {
-        translation = tetMeshGameObject.transform.position;
-        rotation = tetMeshGameObject.transform.rotation;
+    public void getTransforms(out Vector3 translation, out Vector3 rotation) {
+        translation = carGO.transform.position;
+        rotation = carGO.transform.rotation.eulerAngles;
+    }
+    /// <summary>
+    /// Retruns center and radius of outer circle.
+    /// </summary>
+    public void getOuterCircleData(out Vector3 position, out float radius) {
+        position = outerCircleGO.transform.localPosition;
+        radius = outerCircleGO.transform.localScale.x;
+    }
+
+    private Vector3[] getSurfaceVertices() {
+        List<Vector3> surfaceVerts = new List<Vector3>();
+        for (int i=0; i<surfaceVertexIndeces.Length; i++) {
+            surfaceVerts.Add(vertices[surfaceVertexIndeces[i]]);
+        }
+        return surfaceVerts.ToArray();
     }
 
     /// <summary>
@@ -74,7 +90,7 @@ public class TetrahedralMesh : MonoBehaviour {
         filter.mesh = mesh;
         MeshRenderer renderer = surfaceMeshGO.GetComponent<MeshRenderer>();
         renderer.material = tetMeshMaterial;
-        mesh.vertices = surfaceVertices;
+        mesh.vertices = getSurfaceVertices();
         mesh.triangles = surfaceTriangles;
     }
 
@@ -91,6 +107,19 @@ public class TetrahedralMesh : MonoBehaviour {
         }
         Debug.Log("[INFO] "+indeces.Count + "/" + subSet.Count + " surface vertices indexed.");
         return indeces;
+    }
+
+    public void updateVertices(Vector3[] verts) {
+        if(verts.Length != vertices.Length) {
+            Debug.LogError("TetrahedralMesh - updateVertices() :: dll surf verts not equal to unity surf verts");
+        }
+        for (int i=0; i< vertices.Length; i++) {
+            vertices[i] = verts[i];
+        }
+        Vector3[] surfVerts = getSurfaceVertices();
+        surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = surfVerts;
+       // surfaceMeshGO.transform.localPosition = new Vector3(-carGO.transform.position.x, -1, -carGO.transform.position.z);
+       // surfaceMeshGO.transform.Rotate(-carGO.transform.localRotation.eulerAngles);
     }
 
    /*private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {

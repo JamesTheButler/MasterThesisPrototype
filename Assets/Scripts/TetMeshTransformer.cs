@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+[System.Obsolete("Old")]
 public class TetMeshTransformer : MonoBehaviour {
     [SerializeField] private GameObject tetMeshGO;
     private Vector3 basePosition, baseRotation, baseScale;

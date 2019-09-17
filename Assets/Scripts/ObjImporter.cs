@@ -22,7 +22,6 @@ public class ObjImporter{
         verts = new List<Vector3>();
         tris = new List<int>();
 
-
         float[] vertexInfo = { 0, 0, 0 };
         string[] infoString = { };
         //Debug.Log("line count " + allLines.Length);
@@ -51,7 +50,6 @@ public class ObjImporter{
             normals.Add(new Vector3(0, 0, 0));
         }
         Debug.Log(tris.Count + " /3 = " + tris.Count / 3);
-        //for (int tri = 0; tri < tris.Count / 3; tri++) {
         for (int tri = 0; tri < 3; tri++) {
             Vector3 vec1, vec2;
             vec1 = verts[tris[tri * 3 + 2]] - verts[tris[tri * 3]];
