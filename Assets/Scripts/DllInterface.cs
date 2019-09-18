@@ -8,8 +8,7 @@ public class DllInterface : MonoBehaviour {
     [SerializeField] private int solverIterationCount;
     [SerializeField] private TetrahedralMesh tetMesh;
     [SerializeField] private Text collisionCountText;
-    //[SerializeField] private MeshBuilder meshBuilder;
-    [SerializeField] private ColliderSetter collSetter;
+    [SerializeField] private Text closeColliderCountText;
 
     private static DllInterface singleton;
     public static DllInterface getSingleton() { return singleton; }
@@ -17,6 +16,7 @@ public class DllInterface : MonoBehaviour {
     private bool isReadyForCollisionChecks;
 
     /// DLL Methods
+    #region DLL definition
     // setters
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setVertices(Vector3[] verts, int vertexCount);
@@ -29,6 +29,9 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_setTetMeshTransforms(Vector3 translation, Vector3 rotation);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setIterationCount(int iterationCount);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setOuterSphereData(Vector3 position, float radius);
+    
     //getters
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getColliders(IntPtr positions, IntPtr sizes, IntPtr types);
@@ -37,7 +40,10 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getCollisionCount();
     [DllImport("PlasticDeformationDll")]
+    private static extern int dll_getCloseColliderCount();
+    [DllImport("PlasticDeformationDll")]
     private static extern void dll_getTetMeshTransforms(IntPtr translation, IntPtr rotation);
+   
     // calculations
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_collisionHandling();
@@ -48,6 +54,7 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_init();
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_teardown();
+    #endregion region DLL definition
 
     private void Start() {
         singleton = this;
@@ -57,15 +64,15 @@ public class DllInterface : MonoBehaviour {
 
     void Update () {
         if (isReadyForCollisionChecks) {
+            // dll input
             Vector3 translation, rotation;
             tetMesh.getTransforms(out translation, out rotation);
             dll_setTetMeshTransforms(translation, rotation);
-            //getCollisionResult();
+            // solving
             dll_solve();
-            if (!collSetter.isSet)
-                collSetter.setInfo(getCollidersFromDll());
-            //meshBuilder.setVertexData(getVerticesFromDll());
+            // dll output
             tetMesh.updateVertices(getVerticesFromDll());
+            getCollisionResult();
         }
 	}
 
@@ -73,29 +80,38 @@ public class DllInterface : MonoBehaviour {
         dll_teardown();
     }
 
+    public void initData() {
+        setVertices();
+        setColliders();
+        setConstraints();
+        setOuterSphereData();
+    }
+
+    #region setters
     public void setReadyForCollisionChecks(bool isReady) {
         isReadyForCollisionChecks = isReady;
     }
 
-    public void initData() {
-        updateVertices();
-        updateColliders();
-        updateConstraints();
+    private void setOuterSphereData() {
+        Vector3 pos = new Vector3();
+        float radius = 0f;
+        tetMesh.getOuterCircleData(out pos, out radius);
+        dll_setOuterSphereData(pos, radius);
     }
 
-    private void updateVertices() {
+    private void setVertices() {
         Vector3[] vertices = singleton.tetMesh.getVertices();
         dll_setVertices(vertices, vertices.Length);
     }
 
-    private void updateColliders() {
+    private void setColliders() {
         Vector3[] collPos, collSizes;
         ColliderType[] collTypes;
         ColliderManager.getColliderData(out collPos, out collSizes, out collTypes);
         dll_setColliders(collPos, collSizes, collTypes, collPos.Length);
     }
 
-    private void updateConstraints() {
+    private void setConstraints() {
         List<int> vertexIds = new List<int>();
         List<int> startingIndeces = new List<int>();
         List<int> vertexIdArrayLengths = new List<int>();
@@ -124,13 +140,13 @@ public class DllInterface : MonoBehaviour {
         }
         dll_setConstraints(vertexIds.ToArray(), startingIndeces.ToArray(), vertexIdArrayLengths.ToArray(), currentValues.ToArray(), restValues.ToArray(), constraintTypes.ToArray(), constraintCount);
     }
-    
-    public void getCollisionResult() {
-        dll_collisionHandling();
-        int collisionCount = dll_getCollisionCount();
-        collisionCountText.text = "Collision Count: " + collisionCount;
-    }
+    #endregion setters
 
+    #region getters
+    public void getCollisionResult() {
+        collisionCountText.text = "collision count: " + dll_getCollisionCount();
+        closeColliderCountText.text = "close colliders: " + dll_getCloseColliderCount();
+    }
 
     public Vector3[] getVerticesFromDll() {
         Vector3[] resultArray = new Vector3[singleton.tetMesh.getVertices().Length];
@@ -186,4 +202,5 @@ public class DllInterface : MonoBehaviour {
 
         dll_getTetMeshTransforms(posPtr, rotPtr);
     }
+    #endregion getters
 }

@@ -70,7 +70,7 @@ public class TetrahedralMesh : MonoBehaviour {
     /// </summary>
     public void getOuterCircleData(out Vector3 position, out float radius) {
         position = outerCircleGO.transform.localPosition;
-        radius = outerCircleGO.transform.localScale.x;
+        radius = outerCircleGO.transform.localScale.x/2f;
     }
 
     private Vector3[] getSurfaceVertices() {
@@ -110,16 +110,16 @@ public class TetrahedralMesh : MonoBehaviour {
     }
 
     public void updateVertices(Vector3[] verts) {
-        if(verts.Length != vertices.Length) {
+        /*if(verts.Length != vertices.Length) {
             Debug.LogError("TetrahedralMesh - updateVertices() :: dll surf verts not equal to unity surf verts");
         }
         for (int i=0; i< vertices.Length; i++) {
             vertices[i] = verts[i];
         }
         Vector3[] surfVerts = getSurfaceVertices();
-        surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = surfVerts;
-       // surfaceMeshGO.transform.localPosition = new Vector3(-carGO.transform.position.x, -1, -carGO.transform.position.z);
-       // surfaceMeshGO.transform.Rotate(-carGO.transform.localRotation.eulerAngles);
+        surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = surfVerts;*/
+        surfaceMeshGO.transform.localPosition = carGO.transform.position;
+        surfaceMeshGO.transform.rotation = carGO.transform.rotation;
     }
 
    /*private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {
