@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TetrahedralMesh : MonoBehaviour {
+public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
     private Vector3[] vertices;
     private int[] tetrahedra;
     private int tetCount; 
@@ -22,24 +22,7 @@ public class TetrahedralMesh : MonoBehaviour {
 
     public Vector3[] getVertices() { return vertices; }
     public List<Constraint> getConstraints() { return constraints; }
-
-    /// <summary>
-    /// Returns vertices with global transform.
-    /// </summary>
-    /*public Vector3[] getGlobalVertices() {
-        Vector3[] globalVerts = (Vector3[])vertices.Clone();
-        Vector3 position = tetMeshGameObject.transform.position;
-        Quaternion rotation = tetMeshGameObject.transform.rotation;
-
-        for(int i = 0; i < globalVerts.Length; i++) {
-            globalVerts[i] = rotation * globalVerts[i];
-        }
-        for (int i = 0; i < globalVerts.Length; i++) {
-            globalVerts[i] += position;
-        }
-        return globalVerts;
-    }*/
-
+    
     /// <summary>
     /// Sets all data to tet mesh.
     /// </summary>
@@ -65,6 +48,7 @@ public class TetrahedralMesh : MonoBehaviour {
         translation = carGO.transform.position;
         rotation = carGO.transform.rotation.eulerAngles;
     }
+
     /// <summary>
     /// Retruns center and radius of outer circle.
     /// </summary>
@@ -118,8 +102,8 @@ public class TetrahedralMesh : MonoBehaviour {
         }
         Vector3[] surfVerts = getSurfaceVertices();
         surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = surfVerts;*/
-        surfaceMeshGO.transform.localPosition = carGO.transform.position;
-        surfaceMeshGO.transform.rotation = carGO.transform.rotation;
+    //    surfaceMeshGO.transform.localPosition = carGO.transform.position;
+    //    surfaceMeshGO.transform.rotation = carGO.transform.rotation;
     }
 
    /*private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {
@@ -153,5 +137,12 @@ public class TetrahedralMesh : MonoBehaviour {
             distanceConstraints.Add(new Constraint(new int[] { tetVertexIDs[2], tetVertexIDs[3] }, Vector3.Distance(tetVertices[2], tetVertices[3]), ConstraintType.DISTANCE));
         }
         return distanceConstraints;
+    }
+
+    public void onTriggerStay(Collider otherCollider) {
+        if (otherCollider.tag == "Obstacle") {
+            Debug.Log("Collision detected");
+            DllInterface.getSingleton().getCollisionResult(otherCollider.gameObject.GetComponent<MyCollider>().getId());
+        }
     }
 }

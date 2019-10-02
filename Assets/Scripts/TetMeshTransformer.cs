@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 
 [System.Obsolete("Old")]
+//TODO: remove
 public class TetMeshTransformer : MonoBehaviour {
     [SerializeField] private GameObject tetMeshGO;
     private Vector3 basePosition, baseRotation, baseScale;
@@ -57,13 +58,6 @@ public class TetMeshTransformer : MonoBehaviour {
         writeDataToUIGroup(tetMeshGO.transform.localPosition, positionGroup);
         writeDataToUIGroup(tetMeshGO.transform.localRotation.eulerAngles, rotationGroup);
         writeDataToUIGroup(tetMeshGO.transform.localScale, scaleGroup);
-    }
-    /// <summary>
-    /// Applies the transformations to the Tet mesh in changing the vertex positions.
-    /// </summary>
-    public void applyTransformation() {
-        //TODO: adjust position of vertices in tet mesh
-        //TODO: set surface mesh vertices to tetMesh.verts[surface mapped index]
     }
 
     public void resetTransformation() {

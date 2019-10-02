@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ColliderManager : MonoBehaviour {
-    private static ColliderManager singleton;
+public class MyColliderManager : MonoBehaviour {
+    private static MyColliderManager singleton;
     private List<MyCollider> colliders;
 
     private void Awake() {
@@ -11,8 +11,9 @@ public class ColliderManager : MonoBehaviour {
         colliders = new List<MyCollider>();
     }
 
-    public static void registerCollider(MyCollider coll) {
+    public static int registerMyCollider(MyCollider coll) {
         singleton.colliders.Add(coll);
+        return singleton.colliders.Count-1;
     }
 
     public static List<MyCollider> getColliderList() {

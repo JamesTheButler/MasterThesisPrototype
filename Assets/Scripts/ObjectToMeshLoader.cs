@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
+//TODO: clean up
 public class ObjectToMeshLoader : MonoBehaviour {
     [SerializeField] private GameObject meshGO;
     [SerializeField] private Material meshMat;

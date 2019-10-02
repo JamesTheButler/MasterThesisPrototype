@@ -38,9 +38,7 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         //write data to TetMesh
         tetMesh.setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
 
-        // set up dll
-        DllInterface dllInterface = DllInterface.getSingleton();
-        dllInterface.initData();
-        dllInterface.setReadyForCollisionChecks(true);
+        // init dll
+        DllInterface.getSingleton().init();
     }
 }

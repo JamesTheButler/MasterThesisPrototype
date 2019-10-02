@@ -9,14 +9,17 @@ public enum ECamName {
 }
 
 public class CameraController : MonoBehaviour {
+    [SerializeField] private ECamName startCam;
+
     [SerializeField] private Camera worldCam;
     [SerializeField] private Camera carFrontCam;
     [SerializeField] private Camera carRightCam;
     [SerializeField] private Camera carLeftCam;
     [SerializeField] private Camera carBackCam;
 
+
     private void Start() {
-        activateCam(ECamName.CAM_BACK);
+        activateCam(startCam);
     }
 
     private void activateCam(ECamName camName) {
