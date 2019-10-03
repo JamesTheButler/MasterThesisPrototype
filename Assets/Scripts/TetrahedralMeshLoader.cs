@@ -11,19 +11,16 @@ enum LineType {
 /// Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
 public class TetrahedralMeshLoader : MonoBehaviour {
     [SerializeField] private TetrahedralMesh tetMesh;
-    //[SerializeField] private MeshBuilder meshBuilder;
 
-    private void Start() {
+    private void Awake() {
         if (tetMesh == null)
             Debug.LogError("No TetrahedralMesh Component found.");
     }
 
-    public void loadTetMesh() {
-        string filePath = EditorUtility.OpenFilePanel("Load .mesh file", "", "mesh");
+    public void loadTetMesh(string filePath) {
         string surfaceFilePath = filePath + "__sf.obj";
-
         //check if .mesh and .obj files exist
-        if(!File.Exists(filePath) || !File.Exists(surfaceFilePath)) {
+        if (!File.Exists(filePath) || !File.Exists(surfaceFilePath)) {
             Debug.LogError("Mesh file or surface file does not exist. Make sure to have \n " + filePath + "and\n" + surfaceFilePath);
             return;
         }
@@ -40,5 +37,10 @@ public class TetrahedralMeshLoader : MonoBehaviour {
 
         // init dll
         DllInterface.getSingleton().init();
+    }
+
+    public void loadTetMesh() {
+        string filePath = EditorUtility.OpenFilePanel("Load .mesh file", "", "mesh");
+        loadTetMesh(filePath);
     }
 }

@@ -433,7 +433,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 945349603}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -340, y: 90, z: 0}
 --- !u!81 &147493656
 AudioListener:
@@ -3733,9 +3733,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 545589233}
-  - {fileID: 1667918024}
   - {fileID: 147493655}
   - {fileID: 2091683128}
+  - {fileID: 1667918024}
   m_Father: {fileID: 714879845}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3900,6 +3900,7 @@ GameObject:
   m_Component:
   - component: {fileID: 987168632}
   - component: {fileID: 987168633}
+  - component: {fileID: 987168634}
   m_Layer: 0
   m_Name: Tet Mesh Loader
   m_TagString: Untagged
@@ -3932,6 +3933,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tetMesh: {fileID: 837177632}
+--- !u!114 &987168634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 987168631}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c5a74e931d6ec24c9e3514044322f3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  filePath: F:/Eigene Dateien/Studium/Master Schweden/9 Master Thesis/Practical/MasterThesisPrototype/Tetrahedralization/Chevrolet_Camaro.obj.mesh
 --- !u!1 &1006375433
 GameObject:
   m_ObjectHideFlags: 0
@@ -6264,7 +6277,7 @@ Transform:
   m_LocalScale: {x: 1.0000004, y: 1.0000001, z: 1.0000004}
   m_Children: []
   m_Father: {fileID: 945349603}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 32.073, y: 0, z: 0}
 --- !u!81 &1667918025
 AudioListener:
@@ -11862,7 +11875,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 945349603}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 11, y: -90, z: 0}
 --- !u!81 &2091683129
 AudioListener:

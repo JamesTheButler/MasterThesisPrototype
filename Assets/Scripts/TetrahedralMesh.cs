@@ -7,7 +7,6 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
     private int[] tetrahedra;
     private int tetCount; 
 
-    //private Vector3[] surfaceVertices;
     private int[] surfaceTriangles;
     private int surfaceTriangleCount;
     private int[] surfaceVertexIndeces;
@@ -32,7 +31,6 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         this.tetrahedra = tetrahedra.ToArray();
         tetCount = tetrahedra.Count / 4;
         //surface info
-       //this.surfaceVertices = surfaceVertices.ToArray();
         this.surfaceTriangles = surfaceTriangles.ToArray();
         //index surface indices
         surfaceVertexIndeces = indexSubsetVertices(surfaceVertices, vertices).ToArray();
@@ -41,20 +39,19 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         constraints = generateDistanceConstraints();
     }
 
+    public void updateVertices(Vector3[] newVertices) {
+        for(int i=0; i<vertices.Length; i++) {
+            vertices[i] = newVertices[i];
+        }
+        surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = getSurfaceVertices();
+    }
+
     /// <summary>
     /// Returns the translation and rotation of the tet mesh using the parameters as output.
     /// </summary>
     public void getTransforms(out Vector3 translation, out Vector3 rotation) {
         translation = carGO.transform.position;
         rotation = carGO.transform.rotation.eulerAngles;
-    }
-
-    /// <summary>
-    /// Retruns center and radius of outer circle.
-    /// </summary>
-    public void getOuterCircleData(out Vector3 position, out float radius) {
-        position = outerCircleGO.transform.localPosition;
-        radius = outerCircleGO.transform.localScale.x/2f;
     }
 
     private Vector3[] getSurfaceVertices() {
@@ -92,20 +89,7 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         Debug.Log("[INFO] "+indeces.Count + "/" + subSet.Count + " surface vertices indexed.");
         return indeces;
     }
-
-    public void updateVertices(Vector3[] verts) {
-        /*if(verts.Length != vertices.Length) {
-            Debug.LogError("TetrahedralMesh - updateVertices() :: dll surf verts not equal to unity surf verts");
-        }
-        for (int i=0; i< vertices.Length; i++) {
-            vertices[i] = verts[i];
-        }
-        Vector3[] surfVerts = getSurfaceVertices();
-        surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = surfVerts;*/
-    //    surfaceMeshGO.transform.localPosition = carGO.transform.position;
-    //    surfaceMeshGO.transform.rotation = carGO.transform.rotation;
-    }
-
+    
    /*private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {
         switch (type) {
             case ConstraintType.DISTANCE:

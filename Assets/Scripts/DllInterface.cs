@@ -63,25 +63,16 @@ public class DllInterface : MonoBehaviour {
 
     #endregion region DLL definition
 
-    private void Start() {
+    private void Awake() {
         singleton = this;
         dll_init();
-        //dll_setIterationCount(solverIterationCount);
-
-        //testPointAABoxIntersection();
-        //testRotationCalculation(new Vector3(22, -35, -21), new Vector3(340, -23, 400));
     }
 
     public void init() {
-        initData();
-        setReadyForCollisionChecks(true);
-        //logDebugInt();
-    }
-
-    private void initData() {
         setVertices();
         setColliders();
         setConstraints();
+        setReadyForCollisionChecks(true);
     }
 
     private void logDebugInt() {
@@ -92,29 +83,24 @@ public class DllInterface : MonoBehaviour {
         Debug.Log("DebugFloat: " + dll_getDebugFloat());
     }
 
-    private static void testPointAABoxIntersection() {
+    //TODO: remove old
+    /*private static void testPointAABoxIntersection() {
         Debug.Log(dll_testVertexAABoxIntersection(new Vector3(1, 2.6f, 3), new Vector3(1, 1, 1), new Vector3(2, 3, 4)));
         Debug.Log(dll_testVertexAABoxIntersection(new Vector3(1, 2.5f, 3), new Vector3(1, 1, 1), new Vector3(2, 3, 4)));
-    }
+    }*/
 
     void Update () {  
         if (isReadyForCollisionChecks) {
-            // dll input
+            // update transforms of the tet mesh
             Vector3 translation, rotation;
             tetMesh.getTransforms(out translation, out rotation);
             dll_setTetMeshTransforms(translation, rotation);
-            // solving
-            /*dll_solve();
-            // dll output
-            tetMesh.updateVertices(getVerticesFromDll());
-            getCollisionResult();*/
         }
 	}
 
     private void OnDestroy() {
         dll_teardown();
     }
-
 
     private void outputCollisionInfo() {
         collisionCountText.text = "collision count: " + dll_getCollisionCount();
@@ -124,6 +110,7 @@ public class DllInterface : MonoBehaviour {
         if (isReadyForCollisionChecks) {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
+            tetMesh.updateVertices(getVerticesFromDll());
         }
     }
 
@@ -142,8 +129,6 @@ public class DllInterface : MonoBehaviour {
         ColliderType[] collTypes;
         MyColliderManager.getColliderData(out collPositions, out collSizes, out collTypes);
         dll_setColliders(collPositions, collSizes, collTypes, collPositions.Length);
-
-        logDebugFloat();
     }
 
     private void setConstraints() {
