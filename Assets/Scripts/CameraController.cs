@@ -5,7 +5,8 @@ public enum ECamName {
     CAM_BACK,
     CAM_WORLD,
     CAM_LEFT,
-    CAM_RIGHT
+    CAM_RIGHT,
+    CAM_TOP
 }
 
 public class CameraController : MonoBehaviour {
@@ -16,6 +17,7 @@ public class CameraController : MonoBehaviour {
     [SerializeField] private Camera carRightCam;
     [SerializeField] private Camera carLeftCam;
     [SerializeField] private Camera carBackCam;
+    [SerializeField] private Camera carTopCam;
 
 
     private void Start() {
@@ -30,6 +32,7 @@ public class CameraController : MonoBehaviour {
             case ECamName.CAM_LEFT: carLeftCam.enabled = true; break;
             case ECamName.CAM_BACK: carBackCam.enabled = true; break;
             case ECamName.CAM_RIGHT: carRightCam.enabled = true; break;
+            case ECamName.CAM_TOP: carTopCam.enabled = true; break;
         }
     }
 
@@ -39,6 +42,7 @@ public class CameraController : MonoBehaviour {
         carRightCam.enabled = false;
         carLeftCam.enabled = false;
         carBackCam.enabled = false;
+        carTopCam.enabled = false;
     }
 
     void Update () {
@@ -50,6 +54,8 @@ public class CameraController : MonoBehaviour {
             activateCam(ECamName.CAM_RIGHT);
         if (Input.GetKeyDown(KeyCode.Alpha4))
             activateCam(ECamName.CAM_LEFT);
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            activateCam(ECamName.CAM_TOP);
         if (Input.GetKeyDown(KeyCode.Alpha0))
             activateCam(ECamName.CAM_WORLD);
     }

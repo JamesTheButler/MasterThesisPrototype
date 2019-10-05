@@ -14,7 +14,7 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
     private List<Constraint> constraints;
 
     [SerializeField] private GameObject carGO;
-    [SerializeField] private GameObject outerCircleGO;
+    [SerializeField] private GameObject carModelGO;
     [SerializeField] private GameObject tetMeshGameObject;
     [SerializeField] private Material tetMeshMaterial;
     [SerializeField] private GameObject surfaceMeshGO;
@@ -37,11 +37,20 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         generateSurfaceMeshObject();
         //constraints
         constraints = generateDistanceConstraints();
+        Debug.Log("surf verts and model vert counts equal? " + surfaceVertices.Count + ", "+ carModelGO.GetComponent<MeshFilter>().mesh.vertices.Length);
+        int counter = 0;
+        for(int i=0; i<surfaceVertices.Count; i++) {
+            if (carModelGO.GetComponent<MeshFilter>().mesh.vertices[i] == surfaceVertices[i])
+                counter++;
+        }
+        Debug.Log("verts that are equal in surf verts and model verts: " + counter);
     }
 
     public void updateVertices(Vector3[] newVertices) {
         for(int i=0; i<vertices.Length; i++) {
-            vertices[i] = newVertices[i];
+            if (vertices[i] != newVertices[i]) {
+                vertices[i] = newVertices[i];
+            }
         }
         surfaceMeshGO.GetComponent<MeshFilter>().mesh.vertices = getSurfaceVertices();
     }
@@ -90,14 +99,6 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         return indeces;
     }
     
-   /*private void generateConstraints(int[] vertices, List<Vector3> allVertices, ConstraintType type) {
-        switch (type) {
-            case ConstraintType.DISTANCE:
-                generateDistanceConstraints();
-                break;
-        }
-    }*/
-
     /// <summary>
     /// Generates distance constrains. Creates 6 constraints per tetrahedron and sets rest distance to current distance.
     /// </summary>
