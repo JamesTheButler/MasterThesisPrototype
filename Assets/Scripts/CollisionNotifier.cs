@@ -10,7 +10,6 @@ public class CollisionNotifier : MonoBehaviour {
         listeners = new List<ICollisionEventHandler>(attachedObject.GetComponents<ICollisionEventHandler>());
     }
 
-    
     private void OnTriggerStay(Collider collider) {
         foreach (ICollisionEventHandler handler in listeners)
             if (handler != null)

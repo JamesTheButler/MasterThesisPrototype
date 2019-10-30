@@ -1,4 +1,4 @@
-﻿public enum ConstraintType {
+﻿public enum EConstraintType {
     DEFAULT = -1,
     DISTANCE = 0,
     BENDING = 1,
@@ -9,9 +9,9 @@ public struct Constraint {
     int[] vertices;
     float restValue;
     float currentValue;
-    ConstraintType constraintType;
+    EConstraintType constraintType;
 
-    public Constraint(int[] vertices, float restValue, ConstraintType type) {
+    public Constraint(int[] vertices, float restValue, EConstraintType type) {
         this.vertices = vertices;
         this.restValue = restValue;
         this.currentValue = restValue;
@@ -30,7 +30,7 @@ public struct Constraint {
         return currentValue;
     }
 
-    public ConstraintType getConstraintType() {
+    public EConstraintType getConstraintType() {
         return constraintType;
     }
 }

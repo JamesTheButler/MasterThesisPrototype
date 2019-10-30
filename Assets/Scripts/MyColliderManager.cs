@@ -1,14 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class MyColliderManager : MonoBehaviour {
+    public GameObject colliderFolder;
+
     private static MyColliderManager singleton;
     private List<MyCollider> colliders;
 
     private void Awake() {
         singleton = this;
-        colliders = new List<MyCollider>();
+    }
+
+    private void Start() {
+        colliders = new List<MyCollider>(colliderFolder.GetComponentsInChildren<MyCollider>());
+        for (int i = 0; i < colliders.Count; i++)
+            colliders[i].setId(i);
+        DllInterface.getSingleton().setupColliders();
     }
 
     public static int registerMyCollider(MyCollider coll) {
@@ -30,6 +37,7 @@ public class MyColliderManager : MonoBehaviour {
             colliderPositions[i] = singleton.colliders[i].getPosition();
             colliderSizes[i] = singleton.colliders[i].getSize();
             colliderTypes[i] = singleton.colliders[i].getType();
+            Debug.Log("coll nr #" + i + "coll pos:" + colliderPositions[i] + "coll size:" + colliderSizes[i] + "coll type:" + colliderTypes[i]);
         }
     }
 }

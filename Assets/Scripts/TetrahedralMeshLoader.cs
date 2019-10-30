@@ -8,7 +8,8 @@ enum LineType {
     VERTICES,
     TETRAHEDRA
 }
-/// Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
+
+// Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
 public class TetrahedralMeshLoader : MonoBehaviour {
     [SerializeField] private TetrahedralMesh tetMesh;
 
@@ -32,11 +33,8 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         //load data from files
         MeshImporter.import(filePath, out vertices, out tetrahedra);
         ObjImporter.import(surfaceFilePath, out surfaceVertices, out surfaceTriangles);
-        //write data to TetMesh
-        tetMesh.setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
-
-        // init dll
-        DllInterface.getSingleton().init();
+        DllInterface.getSingleton().setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
+        DllInterface.getSingleton().startSimulation();
     }
 
     public void loadTetMesh() {

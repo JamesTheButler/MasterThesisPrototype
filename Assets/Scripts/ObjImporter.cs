@@ -8,14 +8,13 @@ public class ObjImporter{
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out verts, out tris);
         calculateNormals(verts, tris, out normals);
-
-        Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count / 3 + " tris.");
+    //    Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count / 3 + " tris.");
     }
 
     public static void import(string path, out List<Vector3> verts, out List<int> tris) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out verts, out tris);
-        Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
+    //    Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
     }
 
     private static void parse(string[] allLines, out List<Vector3> verts, out List<int> tris) {
@@ -40,7 +39,6 @@ public class ObjImporter{
                 }
             }
         }
-        //Debug.Log("vert count " + verts.Count+ ", tri count " + tris.Count / 3);
     }
 
     private static void calculateNormals(List<Vector3> verts, List<int> tris, out List<Vector3> normals) {
@@ -54,7 +52,6 @@ public class ObjImporter{
             Vector3 vec1, vec2;
             vec1 = verts[tris[tri * 3 + 2]] - verts[tris[tri * 3]];
             vec2 = verts[tris[tri * 3 + 1]] - verts[tris[tri * 3]];
-
             Vector3 faceNormal = Vector3.Normalize(Vector3.Cross(vec1, vec2));
 
             for(int triVertex = 0; triVertex <=2; triVertex++) {

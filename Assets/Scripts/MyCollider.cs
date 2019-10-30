@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum ColliderType {
     NONE = 0,
@@ -11,6 +10,10 @@ public struct MyColliderData {
     public Vector3 size;
     public ColliderType type;
     public int id;
+
+    public override string ToString() {
+        return "pos: " + position+ "size: " + size + "type: " + type + "id: " + id;
+    }
 }
 
 public class MyCollider : MonoBehaviour {
@@ -26,12 +29,7 @@ public class MyCollider : MonoBehaviour {
     public Vector3 getSize() { return collData.size; }
     public ColliderType getType() { return collData.type; }
 
-    private void Start() {
-        setInfo();
-        collData.id = MyColliderManager.registerMyCollider(this);
-    }
-    
-    private void setInfo() {
+    private void Awake() {
         collData.position = gameObject.transform.localPosition;
         collData.size = gameObject.transform.localScale;
         collData.type = type;
