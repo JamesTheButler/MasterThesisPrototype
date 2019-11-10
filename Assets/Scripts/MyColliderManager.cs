@@ -37,7 +37,6 @@ public class MyColliderManager : MonoBehaviour {
             colliderPositions[i] = singleton.colliders[i].getPosition();
             colliderSizes[i] = singleton.colliders[i].getSize();
             colliderTypes[i] = singleton.colliders[i].getType();
-            Debug.Log("coll nr #" + i + "coll pos:" + colliderPositions[i] + "coll size:" + colliderSizes[i] + "coll type:" + colliderTypes[i]);
         }
     }
 }

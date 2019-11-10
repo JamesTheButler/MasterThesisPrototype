@@ -2,13 +2,17 @@
 
 public class TetMeshAutoLoader : MonoBehaviour {
     [SerializeField] string filePath;
+    [SerializeField] string fileName;
+
     //TODO: find better solution and do it in void Start()
-    int i = 0;
+    bool isFirstFrame = true;
 
     void Update () {
-        if (i == 0) {
-            GetComponent<TetrahedralMeshLoader>().loadTetMesh(filePath);
-            i = 1;
+        if (isFirstFrame) {
+            if (!filePath.EndsWith("\\"))
+                filePath+="\\";
+            GetComponent<TetrahedralMeshLoader>().loadTetMesh(filePath+fileName+ ".obj.mesh");
+            isFirstFrame = false;
         }
 	}
 }

@@ -34,7 +34,7 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         MeshImporter.import(filePath, out vertices, out tetrahedra);
         ObjImporter.import(surfaceFilePath, out surfaceVertices, out surfaceTriangles);
         DllInterface.getSingleton().setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
-        DllInterface.getSingleton().startSimulation();
+    //    DllInterface.getSingleton().startSimulation();
     }
 
     public void loadTetMesh() {
