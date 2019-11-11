@@ -23,8 +23,6 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getVertices(IntPtr verts);
     [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getTempVertices(IntPtr verts);
-    [DllImport("PlasticDeformationDll")]
     private static extern int dll_getVertexCount();
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getSurfVertIndeces(IntPtr ids);
@@ -57,7 +55,10 @@ public class DllInterface : MonoBehaviour {
     // calculations
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getCollisionResult(int colliderId);
-
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_project(int colliderId);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_solveConstraints();
     //setup/setdown
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_init();
@@ -122,48 +123,23 @@ public class DllInterface : MonoBehaviour {
         dll_teardown();
     }
 
-    public void logArray<T>(T[] array, string pretext, int start, int end) {
-        string result = pretext + "";
-        result += "len: " + array.Length + "__";
-        for (int i = start; i <= end; i++) {
-            result += array[i].ToString() + ", ";
-        }
-        Debug.Log(result);
-    }
-
-    public void logArray<T>(T[] array, string pretext, int count ) {
-        string result = pretext + "";
-        result += "len: " + array.Length + "__";
-        for (int i = 0; i < Math.Min(array.Length, count); i++) {
-            result += array[i].ToString() + ", ";
-        }
-        Debug.Log(result);
-    }
-
-    public void logArray<T>(T[] array, string pretext) {
-        logArray<T>(array, pretext, 10);
-    }
-
-    public void logArray<T>(T[] array) {
-        logArray<T>(array, "", 10);
-    }
-
     public void getCollisionResult(int colliderId) {
         if (isSimulating) {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
             tetMesh.updateSurface(getSurfaceVerticesFromDll());
-            /*logArray(getVerticesFromDll(), "Verts: ");
-
-            logArray(getDeltasFromDll(), "Deltas", 100);
-            logArray(getTestCurrDistsFromDll(), "Curr Dists: ");
-            logArray(getConstraintRestValuesFromDll(), "Old Rests: ");
-            logDebugFloat();
-            logArray(getTestNewRestsFromDll(), "New Rests: ");
-        
-            Debug.Log("deltas > 0: " + deltaGT0Count);
-            Debug.Log(dll_getConstraintCount());*/
         }
+    }
+
+    public void solveConstraints() {
+        dll_solveConstraints();
+        tetMesh.updateSurface(getSurfaceVerticesFromDll());
+    }
+
+    public void projectCollision(int collId) {
+        dll_project(collId);
+        outputCollisionInfo();
+        tetMesh.updateSurface(getSurfaceVerticesFromDll());
     }
 
     public void startSimulation() {
