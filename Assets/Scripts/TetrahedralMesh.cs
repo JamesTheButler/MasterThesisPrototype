@@ -50,9 +50,15 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
 
     public void onTriggerStay(Collider otherCollider) {
         if (otherCollider.tag == "Obstacle") {
-            //DllInterface.getSingleton().getCollisionResult(otherCollider.gameObject.GetComponent<MyCollider>().getId());
+            DllInterface.getSingleton().getCollisionResult(otherCollider.gameObject.GetComponent<MyCollider>().getId());
         }
     }
+
+    /*public void onCollisionStay(Collision collision) {
+        if (collision.collider.tag == "Obstacle") {
+            Debug.Log("YAHHAAAA");
+        }
+    }*/
 
     public void updateCarModel(Vector3[] newVertices) {
         Mesh carMesh = carModelGO.GetComponent<MeshFilter>().mesh;

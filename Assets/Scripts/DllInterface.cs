@@ -7,8 +7,10 @@ using UnityEngine.UI;
 public class DllInterface : MonoBehaviour {
     public GameObject infoGO;
 
-    [SerializeField] private int solverIterationCount;
+    [SerializeField] [Range(1, 10)] private int solverIterationCount;
+    [SerializeField] [Range(0, 1)] private float plasticity;
     [SerializeField] private TetrahedralMesh tetMesh;
+    [SerializeField] private Text solverDeltaTimeText;
     [SerializeField] private Text collisionCountText;
 
     private static DllInterface singleton;
@@ -37,7 +39,13 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getCollisionCount();
     [DllImport("PlasticDeformationDll")]
+    private static extern int dll_getDistanceConstraintCount();
+    [DllImport("PlasticDeformationDll")]
+    private static extern int dll_getVolumeConstraintCount();
+    [DllImport("PlasticDeformationDll")]
     private static extern void dll_getTetMeshTransforms(IntPtr translation, IntPtr rotation);
+    [DllImport("PlasticDeformationDll")]
+    private static extern int dll_getSolverDeltaTime();
     //constraint info
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getConstraintCount();
@@ -100,14 +108,13 @@ public class DllInterface : MonoBehaviour {
     private static extern int dll_getConstraintPerVertexCount(int id);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getConstraintPerVertex(int id, IntPtr output);
-
     #endregion region DLL definition
 
     private void Awake() {
         singleton = this;
         dll_init();
-        dll_setIterationCount(1);
-        dll_setPlasticity(0.5f);
+        dll_setIterationCount(solverIterationCount);
+        dll_setPlasticity(plasticity);
     }
 
     void Update () {  
@@ -127,7 +134,8 @@ public class DllInterface : MonoBehaviour {
         if (isSimulating) {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
-            tetMesh.updateSurface(getSurfaceVerticesFromDll());
+            outputSolverDeltaTime();
+           // tetMesh.updateSurface(getSurfaceVerticesFromDll());
         }
     }
 
@@ -147,6 +155,14 @@ public class DllInterface : MonoBehaviour {
     }
 
     #region setters
+    public void setPlasticity(float plasticity) {
+        dll_setPlasticity(plasticity);
+    }
+
+    public void setIteration(float iterationCount) {
+        dll_setIterationCount((int)iterationCount);
+    }
+
     public void setupColliders() {
         Vector3[] collPositions, collSizes;
         ColliderType[] collTypes;
@@ -162,8 +178,8 @@ public class DllInterface : MonoBehaviour {
 
         dll_setTetMeshData(vertices.ToArray(), _vertCount, tetrahedra.ToArray(), _tetCount, surfaceVertices.ToArray(), _surfVertCount, surfaceTriangles.ToArray(), _surfTriCount);
         tetMesh.setupSurface(getSurfaceVerticesFromDll(), getSurfaceTrianglesFromDll());
-
-        //logArray(getConstraintPerVertexFromDll(1), "constraints of vertex 1: ");
+        Debug.Log("dist constraint count: " + dll_getDistanceConstraintCount());
+        Debug.Log("volume constraint count: " + dll_getVolumeConstraintCount());
     }
     #endregion setters
     #region getters
@@ -269,6 +285,17 @@ public class DllInterface : MonoBehaviour {
         Debug.Log("DebugFloat: " + dll_getDebugFloat());
     }
 
+    private void logDebugInt(string pretext) {
+        Debug.Log(pretext + " DebugInt: " + dll_getDebugInt());
+    }
+
+    private void logDebugFloat(string pretext) {
+        Debug.Log(pretext + " DebugFloat: " + dll_getDebugFloat());
+    }
+
+    private void outputSolverDeltaTime() {
+        solverDeltaTimeText.text = "Solver Delta Time: " + dll_getSolverDeltaTime()+ " ms";
+    }
     private void outputCollisionInfo() {
         collisionCountText.text = "collision count: " + dll_getCollisionCount();
     }
