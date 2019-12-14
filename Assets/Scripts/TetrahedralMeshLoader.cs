@@ -3,12 +3,6 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-enum LineType {
-    NONE,
-    VERTICES,
-    TETRAHEDRA
-}
-
 // Used to load a .mesh file and its corresponding surface .obj file into a TetrahedralMesh object.
 public class TetrahedralMeshLoader : MonoBehaviour {
     [SerializeField] private TetrahedralMesh tetMesh;
@@ -18,27 +12,36 @@ public class TetrahedralMeshLoader : MonoBehaviour {
             Debug.LogError("No TetrahedralMesh Component found.");
     }
 
-    public void loadTetMesh(string filePath) {
-        string surfaceFilePath = filePath + "__sf.obj";
+    public void loadTetMesh(string filePath, bool doLoadSurface) {
         //check if .mesh and .obj files exist
-        if (!File.Exists(filePath) || !File.Exists(surfaceFilePath)) {
-            Debug.LogError("Mesh file or surface file does not exist. Make sure to have \n " + filePath + "and\n" + surfaceFilePath);
+        if (!File.Exists(filePath) ) {
+            Debug.LogError("Mesh file does not exist. Make sure to have \n " + filePath );
             return;
         }
         //init data holders
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> tetrahedra = new List<int>();
+            // tet mesh
+        List<Vector3> tetMeshVertices = new List<Vector3>();
+        List<int> tetMeshTetrahedra = new List<int>();
+            //surface
         List<Vector3> surfaceVertices = new List<Vector3>();
         List<int> surfaceTriangles = new List<int>();
-        //load data from files
-        MeshImporter.import(filePath, out vertices, out tetrahedra);
-        ObjImporter.import(surfaceFilePath, out surfaceVertices, out surfaceTriangles);
-        DllInterface.getSingleton().setTetMeshData(vertices, tetrahedra, surfaceVertices, surfaceTriangles);
+        //load tet mesh data from file; pass to dll
+        MeshImporter.import(filePath, out tetMeshVertices, out tetMeshTetrahedra);
+        DllInterface.getSingleton().setTetMeshData(tetMeshVertices, tetMeshTetrahedra);
+
+        if (doLoadSurface) {        // load surface from file; pass to dll; set up surface mesh
+            ObjImporter.import(filePath + "", out surfaceVertices, out surfaceTriangles);
+            DllInterface.getSingleton().setSurfaceData(tetMeshVertices.ToArray());
+            tetMesh.setupSurface(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
+        } else {
+            // passes surface vertices of the car model to the dll.
+            DllInterface.getSingleton().setSurfaceData(tetMesh.getSurfaceVertices());
+        }
         DllInterface.getSingleton().startSimulation();
     }
 
     public void loadTetMesh() {
         string filePath = EditorUtility.OpenFilePanel("Load .mesh file", "", "mesh");
-        loadTetMesh(filePath);
+        loadTetMesh(filePath, false);
     }
 }

@@ -4,17 +4,17 @@ using System.IO;
 using UnityEngine;
 
 public class ObjImporter{
-    public static void import(string path, out List<Vector3> verts, out List<int> tris, out List<Vector3> normals) {
+   /* public static void import(string path, out List<Vector3> verts, out List<int> tris, out List<Vector3> normals) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out verts, out tris);
         calculateNormals(verts, tris, out normals);
-    //    Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count / 3 + " tris.");
-    }
+        Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count / 3 + " tris.");
+    }*/
 
     public static void import(string path, out List<Vector3> verts, out List<int> tris) {
         string[] allLines = File.ReadAllLines(path);
         parse(allLines, out verts, out tris);
-    //    Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
+        Debug.Log("[INFO] .obj import: " + verts.Count + " verts, " + tris.Count/3 + " tris.");
     }
 
     private static void parse(string[] allLines, out List<Vector3> verts, out List<int> tris) {
@@ -37,27 +37,6 @@ public class ObjImporter{
                     int info = Int32.Parse(infoString[i])-1;
                     tris.Add(info);
                 }
-            }
-        }
-    }
-
-    private static void calculateNormals(List<Vector3> verts, List<int> tris, out List<Vector3> normals) {
-        normals = new List<Vector3>();
-        //initialize empty normals
-        for(int i =0; i < verts.Count; i++) {
-            normals.Add(new Vector3(0, 0, 0));
-        }
-        Debug.Log(tris.Count + " /3 = " + tris.Count / 3);
-        for (int tri = 0; tri < 3; tri++) {
-            Vector3 vec1, vec2;
-            vec1 = verts[tris[tri * 3 + 2]] - verts[tris[tri * 3]];
-            vec2 = verts[tris[tri * 3 + 1]] - verts[tris[tri * 3]];
-            Vector3 faceNormal = Vector3.Normalize(Vector3.Cross(vec1, vec2));
-
-            for(int triVertex = 0; triVertex <=2; triVertex++) {
-                int vertexId = tris[tri * 3 + triVertex];
-               // Debug.Log(normals.Count + ", " + vertexId);
-                normals[vertexId] = faceNormal;
             }
         }
     }

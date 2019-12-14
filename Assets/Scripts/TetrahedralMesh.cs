@@ -7,8 +7,6 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
     [SerializeField] private Material tetMeshMaterial;
     [SerializeField] private GameObject surfaceMeshGO;
 
-    public bool showImportedMesh;
-
     private Mesh mesh;
     private MeshFilter mf;
     private MeshRenderer mr;
@@ -21,45 +19,34 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         mr = surfaceMeshGO.GetComponent<MeshRenderer>();
     }
 
-    /// <summary>
-    /// Returns the translation and rotation of the tet mesh using the parameters as output.
-    /// </summary>
+    // Returns the translation and rotation of the tet mesh using the parameters as output.
     public void getTransforms(out Vector3 translation, out Vector3 rotation) {
         translation = carGO.transform.position;
         rotation = carGO.transform.rotation.eulerAngles;
     }
-    
-    //TODO: update original model rather than imported model
+
+    // for manual import
+    // Sets up the surface mesh.
     public void setupSurface(Vector3[] surfaceVertices, int[] surfaceTriangles) {
-        if (showImportedMesh) {
-            mr.material = tetMeshMaterial;
-            surfTris = surfaceTriangles;
-            updateSurface(surfaceVertices);
-        }
-        //updateCarModel(surfaceVertices);
+        mr.material = tetMeshMaterial;
+        mesh.triangles = surfaceTriangles;
+        setSurfaceVertices(surfaceVertices);
     }
 
-    public void updateSurface(Vector3[] newVertices) {
-        if (showImportedMesh) {
-            mesh = new Mesh();
-            mf.mesh = mesh;
-            mesh.vertices = newVertices;
-            mesh.triangles = surfTris;
-        }
+    // for manual import
+    // Update surface mesh.
+    public void setSurfaceVertices(Vector3[] newVertices) {
+        mesh.vertices = newVertices;
     }
 
-    public void onTriggerStay(Collider otherCollider) {
-        if (otherCollider.tag == "Obstacle") {
-            DllInterface.getSingleton().getCollisionResult(otherCollider.gameObject.GetComponent<MyCollider>().getId());
-        }
+    // for automatic import
+    // Returns surface vertices.
+    public Vector3[] getSurfaceVertices() {
+        return carModelGO.GetComponent<MeshFilter>().mesh.vertices;
     }
 
-    /*public void onCollisionStay(Collision collision) {
-        if (collision.collider.tag == "Obstacle") {
-            Debug.Log("YAHHAAAA");
-        }
-    }*/
-
+    // for automatic import
+    // Update the model of the car.
     public void updateCarModel(Vector3[] newVertices) {
         Mesh carMesh = carModelGO.GetComponent<MeshFilter>().mesh;
         Mesh mesh = new Mesh();
@@ -68,5 +55,11 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
         mesh.vertices = newVertices;
         mesh.triangles = carMesh.triangles;
         carMesh = mesh;
+    }
+
+    public void onTriggerStay(Collider otherCollider) {
+        if (otherCollider.tag == "Obstacle") {
+            DllInterface.getSingleton().getCollisionResult(otherCollider.gameObject.GetComponent<MyCollider>().getId());
+        }
     }
 }

@@ -11,7 +11,7 @@ public class TetMeshAutoLoader : MonoBehaviour {
         if (isFirstFrame) {
             if (!filePath.EndsWith("\\"))
                 filePath+="\\";
-            GetComponent<TetrahedralMeshLoader>().loadTetMesh(filePath+fileName+ ".obj.mesh");
+            GetComponent<TetrahedralMeshLoader>().loadTetMesh(filePath+fileName+ ".obj.mesh", true);
             isFirstFrame = false;
         }
 	}
