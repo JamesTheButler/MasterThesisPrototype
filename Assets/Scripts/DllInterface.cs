@@ -167,6 +167,7 @@ public class DllInterface : MonoBehaviour {
 
     // Passes surface vertices to the dll.
     public void setSurfaceData(Vector3[] surfaceVerts) {
+        surfVertCount = surfaceVerts.Length;
         dll_setSurfaceVertices(surfaceVerts, surfaceVerts.Length);
     }
 
@@ -219,13 +220,12 @@ public class DllInterface : MonoBehaviour {
         tetCount = tetrahedra.ToArray().Length/4;
         dll_setTetMeshData(vertices.ToArray(), vertCount, tetrahedra.ToArray(), tetCount);
 
-        Vector3[] surfaceVerts = carBody.GetComponent<MeshFilter>().mesh.vertices;      /// DONT DELETE
+        //Vector3[] surfaceVerts = carBody.GetComponent<MeshFilter>().mesh.vertices;      /// DONT DELETE
 
+        /*
         for (int i = 0; i< 25; i++) {
             Debug.Log(smallVectorToString(surfaceVerts[i]) + " " + smallVectorToString(carTransform.TransformVector(surfaceVerts[i])));
         }
-
-        /*
         Vector3 vert = carBody.GetComponent<MeshFilter>().mesh.vertices[5];
         Debug.Log("vert " +smallVectorToString(  vert));
         Debug.Log("transform.TransformPoint " +carTransform.TransformPoint(vert));
@@ -236,17 +236,17 @@ public class DllInterface : MonoBehaviour {
         Vector4 v = vert;
         v.w = 1;
         Debug.Log("mat4*vec3 " +smallVectorToString(  carTransform.localToWorldMatrix*vert));
-        Debug.Log("mat4*vec4 " +carTransform.localToWorldMatrix*v);*/
+        Debug.Log("mat4*vec4 " +carTransform.localToWorldMatrix*v);
         Vector3 v3 = new Vector3(0.5f, 1f, -2f);
         Vector4 v4 = v3;
         v4.w = 1;
-  //      Debug.Log("l2w * vec4 " + carTransform.localToWorldMatrix * v4);
-  //      Debug.Log("w2l * l2w * vec4 " + carTransform.worldToLocalMatrix * (carTransform.localToWorldMatrix * v4));
-  //      Debug.Log("l2w^-1 * l2w " + carTransform.localToWorldMatrix.inverse * (carTransform.localToWorldMatrix * v4));
+        Debug.Log("l2w * vec4 " + carTransform.localToWorldMatrix * v4);
+        Debug.Log("w2l * l2w * vec4 " + carTransform.worldToLocalMatrix * (carTransform.localToWorldMatrix * v4));
+        Debug.Log("l2w^-1 * l2w " + carTransform.localToWorldMatrix.inverse * (carTransform.localToWorldMatrix * v4));
         //dll_setSurfaceVertices(transformVectorsToWorldSpace(carTransform, surfaceVerts), surfaceVerts.Length);
         //dll_setSurfaceVertices(surfaceVerts, surfaceVerts.Length);
         //Debug.Log("surf vert count: " + dll_getSurfaceVertexCount());
-        //Debug.Log("dist constraint count: " + dll_getDistanceConstraintCount()+ ", volume constraint count: " + dll_getVolumeConstraintCount());
+        //Debug.Log("dist constraint count: " + dll_getDistanceConstraintCount()+ ", volume constraint count: " + dll_getVolumeConstraintCount());*/
     }
     #endregion setters
     #region getters
