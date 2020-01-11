@@ -43,9 +43,9 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
     // for automatic import
     // Returns surface vertices.
     public Vector3[] getSurfaceVertices() {
-        Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[10]);
+       /* Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[10]);
         Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[12]);
-        Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[13]);
+        Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[13]);*/
         return carModelGO.GetComponent<MeshFilter>().mesh.vertices;
     }
 

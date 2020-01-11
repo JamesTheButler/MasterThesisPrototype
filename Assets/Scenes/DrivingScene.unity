@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3849,8 +3849,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infoGO: {fileID: 748984821}
-  filePath: F:\Eigene Dateien\Studium\Master Schweden\9 Master Thesis\Practical\MasterThesisPrototype\Tetrahedralization
-  fileName: Chevrolet_Camaro_2
   solverIterationCount: 1
   plasticity: 0
   tetMesh: {fileID: 837177632}
@@ -3858,6 +3856,9 @@ MonoBehaviour:
   collisionCountText: {fileID: 1151832707}
   carTransform: {fileID: 714879845}
   carBody: {fileID: 1905733631}
+  filePath: C:\\Users\\Tom\\Documents\\Eigene Dateien\\Studium\\Master Schweden\\9
+    Master Thesis\\MasterThesisPrototype\\Tetrahedralization\\
+  fileName: Chevrolet_Camaro_2
 --- !u!4 &815992157
 Transform:
   m_ObjectHideFlags: 0
@@ -4523,9 +4524,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5a74e931d6ec24c9e3514044322f3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filePath: F:\Eigene Dateien\Studium\Master Schweden\9 Master Thesis\Practical\MasterThesisPrototype\Tetrahedralization
+  filePath: C:\Users\Tom\Documents\Eigene Dateien\Studium\Master Schweden\9 Master
+    Thesis\MasterThesisPrototype\Tetrahedralization
   fileName: Chevrolet_Camaro_2
-  surfaceLoadAutomatic: 1
+  useSurfaceFile: 0
 --- !u!1 &1082914959
 GameObject:
   m_ObjectHideFlags: 0

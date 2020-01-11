@@ -7,9 +7,6 @@ using UnityEngine.UI;
 public class DllInterface : MonoBehaviour {
     public GameObject infoGO;
 
-    [SerializeField] string filePath;
-    [SerializeField] string fileName;
-
     [SerializeField] [Range(1, 10)] private int solverIterationCount;
     [SerializeField] [Range(0, 1)] private float plasticity;
     [SerializeField] private TetrahedralMesh tetMesh;
@@ -17,6 +14,9 @@ public class DllInterface : MonoBehaviour {
     [SerializeField] private Text collisionCountText;
     [SerializeField] private Transform carTransform;
     [SerializeField] private GameObject carBody;
+
+    [SerializeField] private string filePath;
+    [SerializeField] private string fileName;
 
     private static DllInterface singleton;
     public static DllInterface getSingleton() { return singleton; }
@@ -87,7 +87,11 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_solveConstraints();
     ///setup/setdown
     [DllImport("PlasticDeformationDll")]
-    private static extern void dll_init();
+    private static extern bool dll_init();
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setFileName(string name, int length);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setFilePath(string path, int length);
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_readTetMeshFiles(string fileName);
     [DllImport("PlasticDeformationDll")]
@@ -131,9 +135,19 @@ public class DllInterface : MonoBehaviour {
 
     private void Awake() {
         singleton = this;
-        dll_init();
+        // set up mesh data
+        dll_setFileName(fileName, fileName.Length);
+        dll_setFilePath(filePath, filePath.Length);
+        dll_setSurfaceVertices(tetMesh.getSurfaceVertices(), tetMesh.getSurfaceVertices().Length);
+        // set up solver
         dll_setIterationCount(solverIterationCount);
         dll_setPlasticity(plasticity);
+        // start
+        if (dll_init()) {
+            Debug.Log("DLL Initialized!");
+        } else {
+            Debug.Log("ERROR: DLL Initialization failed!");
+        }
     }
 
     void Update () {  

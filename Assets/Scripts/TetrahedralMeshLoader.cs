@@ -12,7 +12,7 @@ public class TetrahedralMeshLoader : MonoBehaviour {
             Debug.LogError("No TetrahedralMesh Component found.");
     }
 
-    public void loadTetMesh(string filePath, bool doAutomaticSurfaceLoad) {
+    public void loadTetMesh(string filePath, bool useSurfaceFile) {
         //check if .mesh and .obj files exist
         if (!File.Exists(filePath) ) {
             Debug.LogError("Mesh file does not exist. Make sure to have \n " + filePath );
@@ -29,15 +29,15 @@ public class TetrahedralMeshLoader : MonoBehaviour {
         MeshImporter.import(filePath, out tetMeshVertices, out tetMeshTetrahedra);
         DllInterface.getSingleton().setTetMeshData(tetMeshVertices, tetMeshTetrahedra);
 
-        if (doAutomaticSurfaceLoad) {       
-            // passes surface vertices of the car model to the dll.
-            //DllInterface.getSingleton().setSurfaceData(tetMesh.getScaledSurfaceVertices(100.0f));
-            DllInterface.getSingleton().setSurfaceData(tetMesh.getSurfaceVertices());
-        } else {
+        if (useSurfaceFile) {
             // load surface from file; pass to dll; set up surface mesh
             ObjImporter.import(filePath + "__sf.obj", out surfaceVertices, out surfaceTriangles);
             DllInterface.getSingleton().setSurfaceData(surfaceVertices.ToArray());
             tetMesh.setupSurface(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
+        } else {
+            // passes surface vertices of the car model to the dll.
+            //DllInterface.getSingleton().setSurfaceData(tetMesh.getScaledSurfaceVertices(100.0f));
+            DllInterface.getSingleton().setSurfaceData(tetMesh.getSurfaceVertices());
         }
         DllInterface.getSingleton().startSimulation();
     }
