@@ -78,6 +78,10 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_getTetMeshTransforms(IntPtr translation, IntPtr rotation);
     [DllImport("PlasticDeformationDll")]
     private static extern float dll_getSolverDeltaTime();
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_toggleLoggingOn();
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_toggleLoggingOff();
     /// calculations
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getCollisionResult(int colliderId);
@@ -138,13 +142,18 @@ public class DllInterface : MonoBehaviour {
         // set up mesh data
         dll_setFileName(fileName, fileName.Length);
         dll_setFilePath(filePath, filePath.Length);
+        // enable logging
+        dll_toggleLoggingOn();
+        // set surface mesh data
+        Debug.Log(tetMesh.getSurfaceVertices().Length);
         dll_setSurfaceVertices(tetMesh.getSurfaceVertices(), tetMesh.getSurfaceVertices().Length);
         // set up solver
         dll_setIterationCount(solverIterationCount);
         dll_setPlasticity(plasticity);
-        // start
+        // intialize dll side and start simulation
         if (dll_init()) {
             Debug.Log("DLL Initialized!");
+            startSimulation();
         } else {
             Debug.Log("ERROR: DLL Initialization failed!");
         }
@@ -168,15 +177,9 @@ public class DllInterface : MonoBehaviour {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
             outputSolverDeltaTime();
-            //updateMesh();
+            Debug.Log(carBody.GetComponent<MeshFilter>().mesh.vertices.Length + ", " + dll_getSurfaceVertexCount());
+            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
         }
-    }
-
-    // Updates the mesh of the car (USE ONLY WHEN not USING THE SURFACE MESH)
-    public void updateCarMesh() {
-        Debug.Log(carBody.GetComponent<MeshFilter>().mesh.vertices.Length + ", " + dll_getSurfaceVertexCount());
-        //carBody.GetComponent<MeshFilter>().mesh.vertices = getSurfaceVerticesFromDll();
-        Debug.Log(getSurfaceVerticesFromDll().Length);
     }
 
     // Passes surface vertices to the dll.
@@ -327,7 +330,7 @@ public class DllInterface : MonoBehaviour {
     }
 
     public Vector3[] getSurfaceVerticesFromDll() {
-        Vector3[] resultArray = new Vector3[surfVertCount];
+        Vector3[] resultArray = new Vector3[dll_getSurfaceVertexCount()];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getSurfaceVertices(arrPtr);

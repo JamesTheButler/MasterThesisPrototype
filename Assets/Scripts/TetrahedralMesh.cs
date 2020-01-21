@@ -43,33 +43,20 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
     // for automatic import
     // Returns surface vertices.
     public Vector3[] getSurfaceVertices() {
-       /* Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[10]);
-        Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[12]);
-        Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices[13]);*/
         return carModelGO.GetComponent<MeshFilter>().mesh.vertices;
-    }
-
-    // for automatic import
-    // Returns surface vertices.
-    public Vector3[] getScaledSurfaceVertices(float scale) {
-        List<Vector3> scaledVerts = new List<Vector3>();
-        Vector3[] meshVerts = carModelGO.GetComponent<MeshFilter>().mesh.vertices;
-        for (int i=0; i< meshVerts.Length; i++) {
-            scaledVerts.Add(meshVerts[i] * scale);
-        }
-        return scaledVerts.ToArray();
     }
 
     // for automatic import
     // Update the model of the car.
     public void updateCarModel(Vector3[] newVertices) {
-        Mesh carMesh = carModelGO.GetComponent<MeshFilter>().mesh;
+        carModelGO.GetComponent<MeshFilter>().mesh.vertices = newVertices;
+        /*Mesh carMesh = carModelGO.GetComponent<MeshFilter>().mesh;
         Mesh mesh = new Mesh();
         Debug.Log("carmesh verts "+carMesh.vertices.Length);
         Debug.Log("new verts "+ newVertices.Length);
         mesh.vertices = newVertices;
         mesh.triangles = carMesh.triangles;
-        carMesh = mesh;
+        carMesh = mesh;*/
     }
 
     public void onTriggerStay(Collider otherCollider) {
