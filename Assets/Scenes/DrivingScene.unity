@@ -3532,7 +3532,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 714879844}
   m_LocalRotation: {x: -0, y: -0.17372459, z: -0, w: 0.9847943}
-  m_LocalPosition: {x: 5.43, y: 0, z: -4.04}
+  m_LocalPosition: {x: 2.31, y: 0, z: 4.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 737568471}
@@ -3854,7 +3854,6 @@ MonoBehaviour:
   solverDeltaTimeText: {fileID: 1648458936}
   collisionCountText: {fileID: 1151832707}
   carTransform: {fileID: 714879845}
-  carBody: {fileID: 1905733631}
   filePath: C:/Users/Tom/Documents/Eigene Dateien/Studium/Master Schweden/9 Master
     Thesis/MasterThesisPrototype/
   backupFilePath: F:/Eigene Dateien/Studium/Master Schweden/9 Master Thesis/Practical/MasterThesisPrototype/

@@ -13,7 +13,6 @@ public class DllInterface : MonoBehaviour {
     [SerializeField] private Text solverDeltaTimeText;
     [SerializeField] private Text collisionCountText;
     [SerializeField] private Transform carTransform;
-    [SerializeField] private GameObject carBody;
 
     [SerializeField] private string filePath;
     [SerializeField] private string backupFilePath;
@@ -154,11 +153,8 @@ public class DllInterface : MonoBehaviour {
         dll_setFilePath(filePath, filePath.Length);
         // enable logging
         dll_toggleLoggingOn();
-        // load surface file (surface vertices of tet mesh)
-        //ObjImporter.import(filePath + "Tetrahedralization/" + fileName + ".obj.mesh__sf.obj", out surfaceVertices, out surfaceTriangles);
-        //Debug.Log(surfaceTriangles.Count);
-        // set surface mesh data    
-        //Debug.Log(tetMesh.getSurfaceVertices().Length);
+        // set surface mesh data
+        Debug.Log(tetMesh.getSurfaceVertices().Length);
         dll_setSurfaceVertices(tetMesh.getSurfaceVertices(), tetMesh.getSurfaceVertices().Length);
         // set up solver
         dll_setIterationCount(solverIterationCount);
@@ -166,7 +162,9 @@ public class DllInterface : MonoBehaviour {
         // intialize dll side and start simulation
         if (dll_init()) {
             tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
-            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            //tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            Debug.Log(getVerticesFromDll().Length);
+            //Debug.Log(getSurfaceVerticesFromDll().Length);
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
@@ -176,7 +174,6 @@ public class DllInterface : MonoBehaviour {
 
     void Update () {  
         if (isSimulating) {
-            Debug.Log("Simulating");
             // update transforms of the tet mesh
             Vector3 translation, rotation;
             tetMesh.getTransforms(out translation, out rotation);
@@ -193,7 +190,6 @@ public class DllInterface : MonoBehaviour {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
             outputSolverDeltaTime();
-            Debug.Log(carBody.GetComponent<MeshFilter>().mesh.vertices.Length + ", " + dll_getSurfaceVertexCount());
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
         }
@@ -233,57 +229,11 @@ public class DllInterface : MonoBehaviour {
         dll_setIterationCount((int)iterationCount);
     }
 
-    private string smallVectorToString(Vector3 v) {
-        return "(" + v.x + ", " + v.y + ", " + v.z + ")";
-    }
-
     public void setupColliders() {
         Vector3[] collPositions, collSizes;
         ColliderType[] collTypes;
         MyColliderManager.getColliderData(out collPositions, out collSizes, out collTypes);
         dll_setColliders(collPositions, collSizes, collTypes, collPositions.Length);
-    }
-
-    private Vector3[] transformVectorsToWorldSpace(Transform t, Vector3[] vectors) {
-        List<Vector3> worldSpaceVectors = new List<Vector3>();
-        for(int i = 0; i<vectors.Length; i++) {
-            worldSpaceVectors.Add(t.TransformPoint(vectors[i]));
-        }
-        return worldSpaceVectors.ToArray();
-    }
-
-    public void setTetMeshData(List<Vector3> vertices, List<int> tetrahedra) {
-        vertCount = vertices.ToArray().Length;
-        tetCount = tetrahedra.ToArray().Length/4;
-        dll_setTetMeshData(vertices.ToArray(), vertCount, tetrahedra.ToArray(), tetCount);
-
-        //Vector3[] surfaceVerts = carBody.GetComponent<MeshFilter>().mesh.vertices;      /// DONT DELETE
-
-        /*
-        for (int i = 0; i< 25; i++) {
-            Debug.Log(smallVectorToString(surfaceVerts[i]) + " " + smallVectorToString(carTransform.TransformVector(surfaceVerts[i])));
-        }
-        Vector3 vert = carBody.GetComponent<MeshFilter>().mesh.vertices[5];
-        Debug.Log("vert " +smallVectorToString(  vert));
-        Debug.Log("transform.TransformPoint " +carTransform.TransformPoint(vert));
-        Debug.Log("transform.InverseTransformPoint(transform.TransformPoint  " + smallVectorToString(   carTransform.InverseTransformPoint(carTransform.TransformPoint(vert))));
-        Debug.Log("transform.TransformVector " + smallVectorToString(   carTransform.TransformVector(vert)));
-        Debug.Log("Mat4.MultiplyPoint " + carTransform.localToWorldMatrix.MultiplyPoint(vert));
-        Debug.Log("MultiplyPoint.MultiplyVector " + smallVectorToString(  carTransform.localToWorldMatrix.MultiplyVector(vert)));
-        Vector4 v = vert;
-        v.w = 1;
-        Debug.Log("mat4*vec3 " +smallVectorToString(  carTransform.localToWorldMatrix*vert));
-        Debug.Log("mat4*vec4 " +carTransform.localToWorldMatrix*v);
-        Vector3 v3 = new Vector3(0.5f, 1f, -2f);
-        Vector4 v4 = v3;
-        v4.w = 1;
-        Debug.Log("l2w * vec4 " + carTransform.localToWorldMatrix * v4);
-        Debug.Log("w2l * l2w * vec4 " + carTransform.worldToLocalMatrix * (carTransform.localToWorldMatrix * v4));
-        Debug.Log("l2w^-1 * l2w " + carTransform.localToWorldMatrix.inverse * (carTransform.localToWorldMatrix * v4));
-        //dll_setSurfaceVertices(transformVectorsToWorldSpace(carTransform, surfaceVerts), surfaceVerts.Length);
-        //dll_setSurfaceVertices(surfaceVerts, surfaceVerts.Length);
-        //Debug.Log("surf vert count: " + dll_getSurfaceVertexCount());
-        //Debug.Log("dist constraint count: " + dll_getDistanceConstraintCount()+ ", volume constraint count: " + dll_getVolumeConstraintCount());*/
     }
     #endregion setters
     #region getters
