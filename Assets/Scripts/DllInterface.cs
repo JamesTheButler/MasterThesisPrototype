@@ -166,6 +166,7 @@ public class DllInterface : MonoBehaviour {
         // intialize dll side and start simulation
         if (dll_init()) {
             tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
+            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
