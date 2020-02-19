@@ -33,7 +33,7 @@ public class TetrahedralMeshLoader : MonoBehaviour {
             // load surface from file; pass to dll; set up surface mesh
             ObjImporter.import(filePath + "__sf.obj", out surfaceVertices, out surfaceTriangles);
             DllInterface.getSingleton().setSurfaceData(surfaceVertices.ToArray());
-            tetMesh.setupSurface(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
+            tetMesh.setTetMeshSurface(surfaceVertices.ToArray(), surfaceTriangles.ToArray());
         } else {
             // passes surface vertices of the car model to the dll.
             //DllInterface.getSingleton().setSurfaceData(tetMesh.getScaledSurfaceVertices(100.0f));

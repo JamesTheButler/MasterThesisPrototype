@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -683,7 +683,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &156548165
 Transform:
   m_ObjectHideFlags: 0
@@ -2524,7 +2524,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &537267002
 Transform:
   m_ObjectHideFlags: 0
@@ -2672,7 +2672,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &580624255
 Transform:
   m_ObjectHideFlags: 0
@@ -2761,7 +2761,7 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 599817633}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0.000000007450579, w: 0.7071067}
   m_LocalPosition: {x: 1.5947387, y: 0.627184, z: 3.210249}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
@@ -3532,8 +3532,8 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 714879844}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0.17372459, z: -0, w: 0.9847943}
+  m_LocalPosition: {x: 4.08, y: 0, z: -1.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 737568471}
@@ -3547,7 +3547,7 @@ Transform:
   - {fileID: 1775580027}
   m_Father: {fileID: 1311593633}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -20.009, z: 0}
 --- !u!114 &714879846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3656,7 +3656,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: bf4632260ceb6bd4d8ffd87199c3396a, type: 3}
+  - {fileID: 2100000, guid: 8adcdcc4a6fc8cc4c8bbe9165cdfb3e2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3856,7 +3856,9 @@ MonoBehaviour:
   collisionCountText: {fileID: 1151832707}
   carTransform: {fileID: 714879845}
   carBody: {fileID: 1905733631}
-  filePath: F:/Eigene Dateien/Studium/Master Schweden/9 Master Thesis/Practical/MasterThesisPrototype/
+  filePath: C:/Users/Tom/Documents/Eigene Dateien/Studium/Master Schweden/9 Master
+    Thesis/MasterThesisPrototype/
+  backupFilePath: F:/Eigene Dateien/Studium/Master Schweden/9 Master Thesis/Practical/MasterThesisPrototype/
   fileName: Chevrolet_Camaro_2
 --- !u!4 &815992157
 Transform:
@@ -3885,7 +3887,6 @@ MonoBehaviour:
   carGO: {fileID: 389122559}
   carModelGO: {fileID: 1229303675}
   tetMeshGameObject: {fileID: 1775580026}
-  tetMeshMaterial: {fileID: 2100000, guid: 8adcdcc4a6fc8cc4c8bbe9165cdfb3e2, type: 2}
   surfaceMeshGO: {fileID: 2054822675}
 --- !u!1 &848486764
 GameObject:
@@ -4285,7 +4286,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1058328932
 Transform:
   m_ObjectHideFlags: 0
@@ -4486,7 +4487,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1081976491
 Transform:
   m_ObjectHideFlags: 0
@@ -4518,7 +4519,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1081976490}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c5a74e931d6ec24c9e3514044322f3e, type: 3}
   m_Name: 
@@ -4985,7 +4986,7 @@ GameObject:
   - component: {fileID: 1229303677}
   - component: {fileID: 1229303676}
   m_Layer: 0
-  m_Name: CarBody
+  m_Name: CarBodyOld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12644,6 +12645,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2054822676}
   - component: {fileID: 716943344}
+  - component: {fileID: 2054822677}
   m_Layer: 0
   m_Name: Surface Mesh
   m_TagString: Untagged
@@ -12664,6 +12666,13 @@ Transform:
   m_Father: {fileID: 1775580027}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2054822677
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2054822675}
+  m_Mesh: {fileID: 0}
 --- !u!1 &2091683127
 GameObject:
   m_ObjectHideFlags: 0
