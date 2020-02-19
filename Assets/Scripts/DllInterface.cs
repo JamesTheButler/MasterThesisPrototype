@@ -165,7 +165,7 @@ public class DllInterface : MonoBehaviour {
         dll_setPlasticity(plasticity);
         // intialize dll side and start simulation
         if (dll_init()) {
-            //tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
+            tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
@@ -188,13 +188,13 @@ public class DllInterface : MonoBehaviour {
     }
 
     public void getCollisionResult(int colliderId) {
-        if (isSimulating) {
+        if (false/*isSimulating*/) {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
             outputSolverDeltaTime();
             Debug.Log(carBody.GetComponent<MeshFilter>().mesh.vertices.Length + ", " + dll_getSurfaceVertexCount());
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
-            //update tet mesh with getTetMeshSurfaceVerticesFromDll();
+            tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
         }
     }
 
@@ -206,16 +206,16 @@ public class DllInterface : MonoBehaviour {
 
     public void solveConstraints() {
         dll_solveConstraints();
-        //tetMesh.updateCarModel(getTetMeshSurfaceVerticesFromDll());
+        outputCollisionInfo();
+        outputSolverDeltaTime();
+        tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
     }
 
     public void projectCollision(int collId) {
         dll_project(collId);
         outputCollisionInfo();
         outputSolverDeltaTime();
-        //tetMesh.setSurfaceVertices(getSurfaceVerticesFromDll());
-        //tetMesh.updateCarModel(getSurfaceVerticesFromDll());
-        //tetMesh.updateCarModel(getTetMeshSurfaceVerticesFromDll());
+        tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
     }
 
     public void startSimulation() {
@@ -365,7 +365,7 @@ public class DllInterface : MonoBehaviour {
     }
 
     public int[] getTetMeshSurfaceTrianglesFromDll() {
-        int[] result = new int[dll_getTetMeshSurfaceTriangleCount()];
+        int[] result = new int[dll_getTetMeshSurfaceTriangleCount()*3];
         GCHandle arrHandle = GCHandle.Alloc(result, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getTetMeshSurfaceTriangles(arrPtr);
