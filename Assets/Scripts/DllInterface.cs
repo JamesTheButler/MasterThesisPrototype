@@ -156,15 +156,14 @@ public class DllInterface : MonoBehaviour {
         // set surface mesh data
         Debug.Log(tetMesh.getSurfaceVertices().Length);
         dll_setSurfaceVertices(tetMesh.getSurfaceVertices(), tetMesh.getSurfaceVertices().Length);
+        Debug.Log(dll_getSurfaceVertexCount());
         // set up solver
         dll_setIterationCount(solverIterationCount);
         dll_setPlasticity(plasticity);
         // intialize dll side and start simulation
         if (dll_init()) {
             tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
-            //tetMesh.updateCarModel(getSurfaceVerticesFromDll());
-            Debug.Log(getVerticesFromDll().Length);
-            //Debug.Log(getSurfaceVerticesFromDll().Length);
+            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
@@ -186,7 +185,7 @@ public class DllInterface : MonoBehaviour {
     }
 
     public void getCollisionResult(int colliderId) {
-        if (false/*isSimulating*/) {
+        if (isSimulating) {
             dll_getCollisionResult(colliderId);
             outputCollisionInfo();
             outputSolverDeltaTime();
