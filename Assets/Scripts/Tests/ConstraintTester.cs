@@ -2,7 +2,49 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Runtime.InteropServices;
+using System;
+
 public class ConstraintTester : MonoBehaviour {
+    // solve
+    [DllImport("TestDll")]
+    private static extern void dll_solve();
+    [DllImport("TestDll")]
+    private static extern void dll_apply_gravity();
+    [DllImport("TestDll")]
+    private static extern void dll_solve_distance();
+    [DllImport("TestDll")]
+    private static extern void dll_solve_volume();
+    [DllImport("TestDll")]
+    private static extern void dll_solve_both();
+    //setup
+    [DllImport("TestDll")]
+    private static extern bool dll_init();
+    [DllImport("TestDll")]
+    private static extern bool dll_teardown();
+    // setters
+    [DllImport("TestDll")]
+    private static extern void dll_setVerts(Vector3[] verts, int count);
+    [DllImport("TestDll")]
+    private static extern void dll_setTets(int[] tetrahedra, int count);
+    [DllImport("TestDll")]
+    private static extern void dll_setIterationCount(int iterationCount);
+    [DllImport("TestDll")]
+    private static extern void dll_setFallSpeed(float speed);
+    [DllImport("TestDll")]
+    private static extern void dll_setIsMovable(int[] bools, int count);
+    //getters
+    [DllImport("TestDll")]
+    private static extern void dll_getTets(IntPtr tets);
+    [DllImport("TestDll")]
+    private static extern int dll_getTetCount();
+    [DllImport("TestDll")]
+    private static extern void dll_getVerts(IntPtr verts);
+    [DllImport("TestDll")]
+    private static extern int dll_getVertCount();
+    [DllImport("TestDll")]
+    private static extern int dll_getIterationCount();
+
 
     class ivec4 {
         public int x, y, z, w;
@@ -34,7 +76,7 @@ public class ConstraintTester : MonoBehaviour {
         verts.Add(new Vector3(0, 2, 0));
         verts.Add(new Vector3(0, 0, 0));
         verts.Add(new Vector3(1, 0, 0));
-        verts.Add(new Vector3(-1, 0.5f, 1));
+        verts.Add(new Vector3(-1, -1f, 3));
 
         tets.Add(new ivec4(0,1,2,3));
 
@@ -44,16 +86,86 @@ public class ConstraintTester : MonoBehaviour {
         isMovable[0] = false;
     }
 
+    public void applyGravity() {
+        dll_apply_gravity();
+        updateVertices(getVertsFromDll());
+    }
+    public void solveDistance() {
+        dll_solve_distance();
+        updateVertices(getVertsFromDll());
+    }
+    public void solveVolume() {
+        dll_solve_volume();
+        updateVertices(getVertsFromDll());
+    }
+    public void solveBoth() {
+        dll_solve_volume();
+        dll_solve_distance();
+        updateVertices(getVertsFromDll());
+    }
+
+
+    private int[] toIntArray(List<ivec4> ivec4Array) {
+        List<int> result = new List<int>();
+        foreach (ivec4 i in ivec4Array) {
+            result.Add(i.x);
+            result.Add(i.y);
+            result.Add(i.z);
+            result.Add(i.w);
+        }
+        return result.ToArray();
+    }
+
+    public int[] getIntBoolArray(List<bool> bools) {
+        List<int> ints = new List<int>();
+        for(int i=0; i<bools.Count; i++) {
+            ints.Add(bools[i] ? 1 : 0);
+        }
+        return ints.ToArray();
+    }
+
+    private void initDll() {
+        dll_setIterationCount(1);
+        dll_setFallSpeed(5f);
+        dll_setVerts(verts.ToArray(), verts.Count);
+        dll_setTets(toIntArray(tets), tets.Count);
+        dll_setIsMovable(getIntBoolArray(isMovable), isMovable.Count);
+        dll_init();
+    }
+
     private void Start() {
         init();
+        initDll();
     }
 
     private void Update() {
-        for(int i=0; i<verts.Count; i++) {
-            if (isMovable[i]) {
-                verts[i] += (new Vector3(0, -5, 0)*Time.deltaTime);
-            }
+        //dll_solve();
+        //dll_solve_distance();
+        //updateVertices(getVertsFromDll());
+        //logDllVerts();
+    }
+
+    private void logDllVerts() {
+        string s = "";
+        Vector3[] verts = getVertsFromDll();
+        for(int i=0; i<verts.Length; i++) {
+            s += verts[i] + ", ";
         }
+        Debug.Log(s);
+    }
+
+    private void updateVertices(Vector3[] newVerts) {
+        for (int i=0; i<verts.Count; i++) {
+            verts[i] = newVerts[i];
+        }
+    }
+
+    public Vector3[] getVertsFromDll() {
+        Vector3[] resultArray = new Vector3[dll_getVertCount()];
+        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
+        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
+        dll_getVerts(arrPtr);
+        return resultArray;
     }
 
     static Material lineMaterial;
@@ -106,5 +218,10 @@ public class ConstraintTester : MonoBehaviour {
         }
         GL.End();
         GL.PopMatrix();
+    }
+
+
+    private void OnDestroy() {
+        dll_teardown();
     }
 }
