@@ -12,11 +12,17 @@ public class ConstraintTester : MonoBehaviour {
     [DllImport("TestDll")]
     private static extern void dll_apply_gravity();
     [DllImport("TestDll")]
-    private static extern void dll_solve_distance();
+    private static extern void dll_solve_distance_j();
     [DllImport("TestDll")]
-    private static extern void dll_solve_volume();
+    private static extern void dll_solve_volume_j();
+     [DllImport("TestDll")]
+    private static extern void dll_solve_distance_gs();
     [DllImport("TestDll")]
-    private static extern void dll_solve_both();
+    private static extern void dll_solve_volume_gs();
+    [DllImport("TestDll")]
+    private static extern void dll_solve_j();
+    [DllImport("TestDll")]
+    private static extern void dll_solve_gs();
     //setup
     [DllImport("TestDll")]
     private static extern bool dll_init();
@@ -46,17 +52,17 @@ public class ConstraintTester : MonoBehaviour {
     private static extern int dll_getIterationCount();
 
 
-    class ivec4 {
+    class Vector4i {
         public int x, y, z, w;
 
-        public ivec4() {
+        public Vector4i() {
             this.x = 0;
             this.y = 0;
             this.z = 0;
             this.w = 0;
         }
 
-        public ivec4(int x, int y, int z, int w) {
+        public Vector4i(int x, int y, int z, int w) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -65,20 +71,36 @@ public class ConstraintTester : MonoBehaviour {
     }
 
     List<Vector3> verts;
-    List<ivec4> tets;
+    List<Vector4i> tets;
     List<bool> isMovable;
+
+    private void Start() {
+        init();
+        initDll();
+    }
+
+    private void Update() {
+        //dll_solve();
+        dll_solve_distance_j();
+        dll_solve_volume_gs();
+        updateVertices(getVertsFromDll());
+    }
 
     public void init() {
         verts = new List<Vector3>();
-        tets = new List<ivec4>();
+        tets = new List<Vector4i>();
         isMovable = new List<bool>();
 
         verts.Add(new Vector3(0, 2, 0));
         verts.Add(new Vector3(0, 0, 0));
         verts.Add(new Vector3(1, 0, 0));
-        verts.Add(new Vector3(-1, -1f, 3));
+        verts.Add(new Vector3(-2.5f, -1f, 1.5f));
+        verts.Add(new Vector3(-2.5f, 0, 0.5f));
+        verts.Add(new Vector3(-2, -3, 0));
 
-        tets.Add(new ivec4(0,1,2,3));
+        tets.Add(new Vector4i(0, 1, 2, 3));
+        tets.Add(new Vector4i(0, 1, 3, 4));
+        tets.Add(new Vector4i(1, 2, 3, 5));
 
         for(int i=0; i < verts.Count; i++) {
             isMovable.Add(true);
@@ -91,23 +113,22 @@ public class ConstraintTester : MonoBehaviour {
         updateVertices(getVertsFromDll());
     }
     public void solveDistance() {
-        dll_solve_distance();
+        dll_solve_distance_j();
         updateVertices(getVertsFromDll());
     }
     public void solveVolume() {
-        dll_solve_volume();
+        dll_solve_volume_j();
         updateVertices(getVertsFromDll());
     }
     public void solveBoth() {
-        dll_solve_volume();
-        dll_solve_distance();
+        dll_solve_volume_j();
+        dll_solve_distance_j();
         updateVertices(getVertsFromDll());
     }
 
-
-    private int[] toIntArray(List<ivec4> ivec4Array) {
+    private int[] toIntArray(List<Vector4i> ivec4Array) {
         List<int> result = new List<int>();
-        foreach (ivec4 i in ivec4Array) {
+        foreach (Vector4i i in ivec4Array) {
             result.Add(i.x);
             result.Add(i.y);
             result.Add(i.z);
@@ -133,17 +154,6 @@ public class ConstraintTester : MonoBehaviour {
         dll_init();
     }
 
-    private void Start() {
-        init();
-        initDll();
-    }
-
-    private void Update() {
-        //dll_solve();
-        //dll_solve_distance();
-        //updateVertices(getVertsFromDll());
-        //logDllVerts();
-    }
 
     private void logDllVerts() {
         string s = "";
@@ -187,7 +197,7 @@ public class ConstraintTester : MonoBehaviour {
     }
 
     public void drawTet(int tetId) {
-        ivec4 tet = tets[tetId];
+        Vector4i tet = tets[tetId];
         GL.Vertex3(verts[tet.x].x, verts[tet.x].y, verts[tet.x].z);
         GL.Vertex3(verts[tet.y].x, verts[tet.y].y, verts[tet.y].z);
         GL.Vertex3(verts[tet.x].x, verts[tet.x].y, verts[tet.x].z);
