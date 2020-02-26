@@ -7,15 +7,14 @@ public interface MovementListener {
 }
 
 public class ControlSphere : MonoBehaviour {
-    private int id;
-    List<MovementListener> listeners;
+    [SerializeField] private int id;
+    MovementListener listener = null;
     Vector3 oldPos;
 
     private Vector3 mOffset;
     private float mZCoord;
 
-    private void Start() {
-        listeners = new List<MovementListener>();
+    private void Awake() {
         oldPos = transform.position;
     }
 
@@ -34,18 +33,15 @@ public class ControlSphere : MonoBehaviour {
         this.id = id;
     }
 
-    public void addMovementListener(MovementListener l) {
-       // listeners.Add(l);
+    public void setMovementListener(MovementListener l) {
+        listener = l;
     }
 
     private void OnMouseDrag() {
         Vector3 pos = GetMouseAsWorldPoint() + mOffset; ;
         transform.position = pos;
-        if (pos != oldPos && listeners.Count!=0) {
-    
-            foreach(MovementListener l in listeners) {
-                l.onPosChanged(this.id, pos);
-            }
+        if (pos != oldPos && listener != null) {
+            listener.onPosChanged(id, pos);
         }
     }
 }

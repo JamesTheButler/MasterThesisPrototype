@@ -23,9 +23,17 @@ public class BCTester : MonoBehaviour, MovementListener {
     private static extern void dll_bc_updateVert(int id, float x, float y, float z);
     //getters
     [DllImport("TestDll")]
-    private static extern void dll_bc_getFollowers(IntPtr tets);
+    private static extern void dll_bc_get_all(IntPtr verts, IntPtr tets, IntPtr fverts, IntPtr map, IntPtr bccs, IntPtr bcts);
     [DllImport("TestDll")]
     private static extern int dll_bc_getFollowerCount();
+    [DllImport("TestDll")]
+    private static extern void dll_bc_getFollowers(IntPtr tets);
+    //[DllImport("TestDll")]
+    //private static extern int dll_bc_getClosestTetCount();
+    //[DllImport("TestDll")]
+    //private static extern void dll_bc_getClosestTets(IntPtr tets);
+
+    
 
     public class Vector4i {
         public int x, y, z, w;
@@ -50,7 +58,8 @@ public class BCTester : MonoBehaviour, MovementListener {
     List<GameObject> followers;
 
     void Start () {
-        int id = 0;
+        int controllerId = 0;
+        int followerId = 0;
         //grab data from scene
         controllVerts = new List<GameObject>();
         followers = new List<GameObject>();
@@ -59,14 +68,17 @@ public class BCTester : MonoBehaviour, MovementListener {
             Transform child = transform.GetChild(i);
             if (child.tag == "Controller") {
                 controllVerts.Add(child.gameObject);
-                child.gameObject.GetComponent<ControlSphere>().setId(id);
-                id++;
-                child.gameObject.GetComponent<ControlSphere>().addMovementListener(this);
+                child.gameObject.GetComponent<ControlSphere>().setId(controllerId);
+                controllerId++;
+                child.gameObject.GetComponent<ControlSphere>().setMovementListener(this);
             } else if (child.tag == "Follower") {
                 followers.Add(child.gameObject);
+                child.gameObject.GetComponent<Follower>().id = followerId;
+                followerId++;
             }
         }
         tets.Add(new Vector4i(0,1,2,3));
+        tets.Add(new Vector4i(1,2,3,4));
         //init dll
         Debug.Log(getControlVerts().Length);
         Debug.Log(tets.Count);
@@ -75,7 +87,13 @@ public class BCTester : MonoBehaviour, MovementListener {
         dll_bc_setTets(getTets(), tets.Count);
         dll_bc_setFollowers(getFollowers(), getFollowers().Length);
 
-        //dll_bc_init();
+        dll_bc_init();
+        //int[] cts = getClosestTetsFromDll();
+        //Debug.Log(cts.Length);
+        //for (int i = 0; i < cts.Length; i++) {
+        //    Debug.Log(i+": "+cts[i]);
+        //}
+        debugTestDll();
     }
 
     private Vector3[] getControlVerts() {
@@ -109,6 +127,14 @@ public class BCTester : MonoBehaviour, MovementListener {
         }
     }
 
+    //private int[] getClosestTetsFromDll() {
+        //int[] resultArray = new int[dll_bc_getClosestTetCount()];
+        //GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
+        //IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
+        //dll_bc_getClosestTets(arrPtr);
+        //return resultArray;
+    //}
+
     public Vector3[] getFollowersFromDll() {
         Vector3[] resultArray = new Vector3[dll_bc_getFollowerCount()];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
@@ -122,10 +148,44 @@ public class BCTester : MonoBehaviour, MovementListener {
     }
 
     public void onPosChanged(int id, Vector3 newPos) {
-        Debug.Log("sphere nr " + id + " got moved to " + newPos);
+        //Debug.Log("sphere nr " + id + " got moved to " + newPos);
+
         dll_bc_updateVert(id, newPos.x, newPos.y, newPos.z);
         updateFollowers(getFollowersFromDll());
     }
+
+    private void debugTestDll() {
+        Vector3[] vertArray = new Vector3[controllVerts.Count];
+        GCHandle cv_arrHandle = GCHandle.Alloc(vertArray, GCHandleType.Pinned);
+        IntPtr cv_arrPtr = cv_arrHandle.AddrOfPinnedObject();
+
+        Vector4i[] tetArray = new Vector4i[tets.Count];
+        GCHandle ct_arrHandle= GCHandle.Alloc(tetArray, GCHandleType.Pinned);
+        IntPtr ct_arrPtr = ct_arrHandle.AddrOfPinnedObject();
+
+        Vector3[] fVertArray = new Vector3[followers.Count];
+        GCHandle fv_arrHandle = GCHandle.Alloc(fVertArray, GCHandleType.Pinned);
+        IntPtr fv_arrPtr = fv_arrHandle.AddrOfPinnedObject();
+
+        int[] map = new int[controllVerts.Count];
+        GCHandle map_arrHandle = GCHandle.Alloc(map, GCHandleType.Pinned);
+        IntPtr map_arrPtr = map_arrHandle.AddrOfPinnedObject();
+
+        Vector4[] bccs = new Vector4[controllVerts.Count];
+        GCHandle bcc_arrHandle = GCHandle.Alloc(bccs, GCHandleType.Pinned);
+        IntPtr bcc_arrPtr = bcc_arrHandle.AddrOfPinnedObject();
+
+        int[] bcts = new int[controllVerts.Count];
+        GCHandle bct_arrHandle = GCHandle.Alloc(bcts, GCHandleType.Pinned);
+        IntPtr bct_arrPtr = bct_arrHandle.AddrOfPinnedObject();
+
+        dll_bc_get_all(cv_arrPtr, ct_arrPtr, fv_arrPtr, map_arrPtr, bcc_arrPtr, bct_arrPtr);
+        Debug.Log(vertArray.Length + " " +tetArray.Length +" "+ fVertArray.Length + " " + map.Length + " " + bccs.Length + " " + bcts.Length);
+        for(int i=0; i < bccs.Length; i++) {
+            Debug.Log(i + ": " + bccs[i]);
+        }
+    }
+
 
     public void drawTet(Vector4i tet) {
         Vector3[] verts = getControlVerts();
