@@ -37,7 +37,7 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
 
     public void onTriggerStay(Collider otherCollider) {
         if (otherCollider.tag == "Obstacle") {
-            DllInterface.getSingleton().getCollisionResult(otherCollider.gameObject.GetComponent<Indexer>().Id);
+            DllInterface.getSingleton().addCollision(otherCollider.gameObject.GetComponent<Indexer>().Id);
         }
     }
 }
