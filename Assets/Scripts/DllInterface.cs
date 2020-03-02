@@ -154,9 +154,7 @@ public class DllInterface : MonoBehaviour {
         // enable logging
         dll_toggleLoggingOn();
         // set surface mesh data
-        Debug.Log(tetMesh.getSurfaceVertices().Length);
         dll_setSurfaceVertices(tetMesh.getSurfaceVertices(), tetMesh.getSurfaceVertices().Length);
-        Debug.Log(dll_getSurfaceVertexCount());
         // set up solver
         dll_setIterationCount(solverIterationCount);
         dll_setPlasticity(plasticity);
@@ -231,8 +229,9 @@ public class DllInterface : MonoBehaviour {
     public void setupColliders() {
         Vector3[] collPositions, collSizes;
         ColliderType[] collTypes;
-        MyColliderManager.getColliderData(out collPositions, out collSizes, out collTypes);
-        dll_setColliders(collPositions, collSizes, collTypes, collPositions.Length);
+        int colliderCount;
+        ColliderManager.getColliderData(out collPositions, out collSizes, out collTypes, out colliderCount);
+        dll_setColliders(collPositions, collSizes, collTypes, colliderCount);
     }
     #endregion setters
     #region getters
@@ -330,8 +329,8 @@ public class DllInterface : MonoBehaviour {
         return resultArray;
     }
 
-    public MyColliderData[] getCollidersFromDll() {
-        int collCount = MyColliderManager.getColliderList().Count;
+    public ColliderData[] getCollidersFromDll() {
+        int collCount = ColliderManager.getColliderList().Count;
         // initialize handles and pointers
         Vector3[] collPositions = new Vector3[collCount];
         GCHandle posArrHandle = GCHandle.Alloc(collPositions, GCHandleType.Pinned);
@@ -347,8 +346,8 @@ public class DllInterface : MonoBehaviour {
         //retrieve data from dll
         dll_getColliders(posArrPtr, sizeArrPtr, typeArrPtr);
 
-        MyColliderData[] dllColliders = new MyColliderData[collCount];
-        MyColliderData collData;
+        ColliderData[] dllColliders = new ColliderData[collCount];
+        ColliderData collData;
         for (int i=0; i< collCount; i++) {
             collData.position = collPositions[i];
             collData.size = collSizes[i];
