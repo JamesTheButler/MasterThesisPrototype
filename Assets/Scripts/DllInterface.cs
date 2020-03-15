@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class DllInterface : MonoBehaviour {
     public GameObject infoGO;
 
-    [SerializeField] [Range(1, 10)] private int solverIterationCount;
-    [SerializeField] [Range(0, 1)] private float plasticity;
+    [SerializeField] private Slider iterationSlider;
+    [SerializeField] private Slider plasticitySlider;
     [SerializeField] private TetrahedralMesh tetMesh;
     [SerializeField] private Text solverDeltaTimeText;
     [SerializeField] private Text collisionCountText;
@@ -158,8 +158,8 @@ public class DllInterface : MonoBehaviour {
         dll_setSurfaceVertices(tetMesh.getSurfaceVertices(), tetMesh.getSurfaceVertices().Length);
         Debug.Log(dll_getSurfaceVertexCount());
         // set up solver
-        dll_setIterationCount(solverIterationCount);
-        dll_setPlasticity(plasticity);
+        dll_setIterationCount((int)iterationSlider.value);
+        dll_setPlasticity(plasticitySlider.value);
         // intialize dll side and start simulation
         if (dll_init()) {
             tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
