@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using System;
 
-public class ConstraintTester : MonoBehaviour {
+public class ConstraintTester : MonoBehaviour, MovementListener {
     // solve
     [DllImport("TestDll")]
     private static extern void dll_solve();
@@ -50,7 +50,8 @@ public class ConstraintTester : MonoBehaviour {
     private static extern int dll_getVertCount();
     [DllImport("TestDll")]
     private static extern int dll_getIterationCount();
-
+    [DllImport("TestDll")]
+    private static extern void dll_updateVert(int id, float x, float y, float z);
 
     class Vector4i {
         public int x, y, z, w;
@@ -70,38 +71,56 @@ public class ConstraintTester : MonoBehaviour {
         }
     }
 
-    List<Vector3> verts;
+    List<GameObject> verts;
     List<Vector4i> tets;
     List<bool> isMovable;
 
+    public GameObject sphereFolder;
+
     private void Start() {
         init();
-        initDll();
+        dll_setIterationCount(5);
+        dll_setFallSpeed(2.0f);
+        dll_setVerts(getControlVerts(), verts.Count);
+        dll_setTets(toIntArray(tets), tets.Count);
+        dll_setIsMovable(getIntBoolArray(isMovable), isMovable.Count);
+        dll_init();
     }
 
     private void Update() {
         //dll_solve();
-        dll_solve_distance_j();
+        //dll_apply_gravity();
+        //dll_solve_distance_gs();
         dll_solve_volume_gs();
         updateVertices(getVertsFromDll());
     }
 
+    private Vector3[] getControlVerts() {
+        List<Vector3> result = new List<Vector3>();
+        foreach (GameObject go in verts)
+            result.Add(go.transform.position);
+        return result.ToArray();
+    }
+
     public void init() {
-        verts = new List<Vector3>();
+        int controllerId = 0;
+        verts = new List<GameObject>();
+        for (int i = 0; i < sphereFolder.transform.childCount; i++) {
+            GameObject child = sphereFolder.transform.GetChild(i).gameObject;
+            if (child.tag == "Controller") {
+                verts.Add(child);
+                child.GetComponent<ControlSphere>().setMovementListener(this);
+                child.GetComponent<ControlSphere>().setId(controllerId);
+                controllerId++;
+            }
+        }
+
         tets = new List<Vector4i>();
+        tets.Add(new Vector4i(0, 1, 2, 4));
+        tets.Add(new Vector4i(0, 2, 3, 4));
+        tets.Add(new Vector4i(2, 3, 4, 5));
+
         isMovable = new List<bool>();
-
-        verts.Add(new Vector3(0, 2, 0));
-        verts.Add(new Vector3(0, 0, 0));
-        verts.Add(new Vector3(1, 0, 0));
-        verts.Add(new Vector3(-2.5f, -1f, 1.5f));
-        verts.Add(new Vector3(-2.5f, 0, 0.5f));
-        verts.Add(new Vector3(-2, -3, 0));
-
-        tets.Add(new Vector4i(0, 1, 2, 3));
-        tets.Add(new Vector4i(0, 1, 3, 4));
-        tets.Add(new Vector4i(1, 2, 3, 5));
-
         for(int i=0; i < verts.Count; i++) {
             isMovable.Add(true);
         }
@@ -145,16 +164,6 @@ public class ConstraintTester : MonoBehaviour {
         return ints.ToArray();
     }
 
-    private void initDll() {
-        dll_setIterationCount(1);
-        dll_setFallSpeed(5f);
-        dll_setVerts(verts.ToArray(), verts.Count);
-        dll_setTets(toIntArray(tets), tets.Count);
-        dll_setIsMovable(getIntBoolArray(isMovable), isMovable.Count);
-        dll_init();
-    }
-
-
     private void logDllVerts() {
         string s = "";
         Vector3[] verts = getVertsFromDll();
@@ -166,7 +175,7 @@ public class ConstraintTester : MonoBehaviour {
 
     private void updateVertices(Vector3[] newVerts) {
         for (int i=0; i<verts.Count; i++) {
-            verts[i] = newVerts[i];
+            verts[i].transform.position = newVerts[i];
         }
     }
 
@@ -198,6 +207,7 @@ public class ConstraintTester : MonoBehaviour {
 
     public void drawTet(int tetId) {
         Vector4i tet = tets[tetId];
+        List<Vector3> verts = new List<Vector3>(getControlVerts());
         GL.Vertex3(verts[tet.x].x, verts[tet.x].y, verts[tet.x].z);
         GL.Vertex3(verts[tet.y].x, verts[tet.y].y, verts[tet.y].z);
         GL.Vertex3(verts[tet.x].x, verts[tet.x].y, verts[tet.x].z);
@@ -233,5 +243,10 @@ public class ConstraintTester : MonoBehaviour {
 
     private void OnDestroy() {
         dll_teardown();
+    }
+
+    public void onPosChanged(int id, Vector3 newPos) {
+        dll_updateVert(id, newPos.x, newPos.y, newPos.z);
+        Debug.Log("onPosChanged " + id + ": "+newPos);
     }
 }

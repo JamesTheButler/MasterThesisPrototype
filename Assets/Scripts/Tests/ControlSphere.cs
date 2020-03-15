@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public interface MovementListener {
     void onPosChanged(int id, Vector3 newPos);
@@ -38,6 +36,14 @@ public class ControlSphere : MonoBehaviour {
     }
 
     private void OnMouseDrag() {
+        /*Vector3 pos = GetMouseAsWorldPoint() + mOffset; ;
+        transform.position = pos;
+        if (pos != oldPos && listener != null) {
+            listener.onPosChanged(id, pos);
+        }*/
+    }
+
+    private void OnMouseUp() {
         Vector3 pos = GetMouseAsWorldPoint() + mOffset; ;
         transform.position = pos;
         if (pos != oldPos && listener != null) {
