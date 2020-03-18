@@ -1,1 +1,0 @@
-F:\Programme\TetWild\build\Debug\TetWild --input "%cd%\car.obj" --output "%cd%\car10k.obj.mesh" --max-pass 10 --targeted-num-v 10000
