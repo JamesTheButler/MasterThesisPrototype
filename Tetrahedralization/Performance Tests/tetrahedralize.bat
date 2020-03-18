@@ -1,3 +1,1 @@
-SET /p file=Enter File name:
-F:\Programme\TetWild\build\Debug\TetWild --input "%cd%\%file%"
-PAUSE
+F:\Programme\TetWild\build\Debug\TetWild --input "%cd%\car.obj" --output "%cd%\car10k.obj.mesh" --max-pass 10 --targeted-num-v 10000
