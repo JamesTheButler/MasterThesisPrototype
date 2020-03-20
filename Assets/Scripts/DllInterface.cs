@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,11 @@ public class DllInterface : MonoBehaviour {
     [SerializeField] private string filePath;
     [SerializeField] private string backupFilePath;
     [SerializeField] private string fileName;
+
+    [SerializeField] private bool useSerialInit = false;
+    [SerializeField] private bool useSurfaceToTetMap = false;
+    [SerializeField] private bool useInitFromFile = false;
+    [SerializeField] private bool useStoreData = false;
 
     private static DllInterface singleton;
     public static DllInterface getSingleton() { return singleton; }
@@ -49,15 +55,6 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_getSurfaceVertices(IntPtr verts);
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getSurfaceVertexCount();
-    //tet mesh surface data
-    /*[DllImport("PlasticDeformationDll")]
-    private static extern int dll_getTetMeshSurfaceVertexCount();
-    [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getTetMeshSurfaceVertices(IntPtr verts);
-    [DllImport("PlasticDeformationDll")]
-    private static extern int dll_getTetMeshSurfaceTriangleCount();
-    [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getTetMeshSurfaceTriangles(IntPtr tris);*/
     // barycentric data
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getBarycentricCoordinates(IntPtr barycentricTetIds);
@@ -105,6 +102,8 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_init();
     [DllImport("PlasticDeformationDll")]
+    private static extern bool dll_init_S();
+    [DllImport("PlasticDeformationDll")]
     private static extern bool dll_initFromFile(string fileName, int length);
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_storeData();
@@ -143,8 +142,10 @@ public class DllInterface : MonoBehaviour {
     private void Awake() {
         singleton = this;
         collisions = new List<int>();
-        initializeDLL();
-        //initializeDLLFromFile();
+        if(useInitFromFile)
+            initializeDLLFromFile();
+        else
+            initializeDLL();
     }
 
     void initializeDLLFromFile() {
@@ -155,7 +156,7 @@ public class DllInterface : MonoBehaviour {
         // set up solver
         dll_setIterationCount((int)iterationSlider.value);
         dll_setPlasticity(plasticitySlider.value);
-        string tetmeshFileName = "Chevrolet_Camaro_2.tetMesh";
+        string tetmeshFileName = fileName+".tetMesh";
         if (dll_initFromFile(tetmeshFileName, tetmeshFileName.Length)) {
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             Debug.Log("DLL Initialized!");
@@ -177,8 +178,15 @@ public class DllInterface : MonoBehaviour {
         dll_setIterationCount((int)iterationSlider.value);
         dll_setPlasticity(plasticitySlider.value);
         // intialize dll side and start simulation
-        if (dll_init()) {
-            dll_storeData();
+        bool isInitSuccess = false;
+        if (useSerialInit)
+            isInitSuccess = dll_init_S();
+        else
+            isInitSuccess = dll_init();
+
+        if (isInitSuccess) {
+            if(useStoreData)
+                dll_storeData();
             // tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             Debug.Log("DLL Initialized!");
@@ -240,18 +248,21 @@ public class DllInterface : MonoBehaviour {
 
     public void startSimulation() {
         isSimulating = true;
-        logInitExecutionTimes();
+        logExecutionTimes();
     }
 
-    private void logInitExecutionTimes() {
+    private void logExecutionTimes() {
         int[] times = getInitExecutionTimesFromDll();
-        Debug.Log("Init total " + times[0]
+        string text = "Init total " + times[0]
             + " ms, read file: " + times[1]
             + " ms, generate constraints: " + times[2]
             + " ms, bc find tet ids: " + times[3]
             + " ms, bc mapping: " + times[4]
             + " ms, serialized save: " + times[5]
-            + " ms, serialized load: " + times[6]);
+            + " ms, serialized load: " + times[6]+"\n";
+        Debug.Log(text);
+        string path = @"F:\Eigene Dateien\Studium\Master Schweden\9 Master Thesis\Practical\MasterThesisPrototype\Logs\times.log";
+        File.AppendAllText(path, text);
     }
 
     #region setters

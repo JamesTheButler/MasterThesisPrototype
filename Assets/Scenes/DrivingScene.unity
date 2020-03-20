@@ -4009,6 +4009,10 @@ MonoBehaviour:
   backupFilePath: C:/Users/Tom/Documents/Eigene Dateien/Studium/Master Schweden/9
     Master Thesis/MasterThesisPrototype/
   fileName: car50k
+  useSerialInit: 0
+  useSurfaceToTetMap: 0
+  useInitFromFile: 1
+  useStoreData: 0
 --- !u!4 &815992157
 Transform:
   m_ObjectHideFlags: 0
