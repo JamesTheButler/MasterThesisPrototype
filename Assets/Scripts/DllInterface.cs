@@ -50,14 +50,14 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getSurfaceVertexCount();
     //tet mesh surface data
-    [DllImport("PlasticDeformationDll")]
+    /*[DllImport("PlasticDeformationDll")]
     private static extern int dll_getTetMeshSurfaceVertexCount();
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getTetMeshSurfaceVertices(IntPtr verts);
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getTetMeshSurfaceTriangleCount();
     [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getTetMeshSurfaceTriangles(IntPtr tris);
+    private static extern void dll_getTetMeshSurfaceTriangles(IntPtr tris);*/
     // barycentric data
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getBarycentricCoordinates(IntPtr barycentricTetIds);
@@ -80,11 +80,7 @@ public class DllInterface : MonoBehaviour {
     private static extern int dll_getDeltasCount();
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getDeltas(IntPtr output);
-   /* [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getTestCurrDist(IntPtr ouput);
-    [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getTestNewRest(IntPtr ouput);
-    */// other
+    // other
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getTetMeshTransforms(IntPtr translation, IntPtr rotation);
     [DllImport("PlasticDeformationDll")]
@@ -93,6 +89,11 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_toggleLoggingOn();
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_toggleLoggingOff();
+
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_getInitExecutionTimes(IntPtr rotation);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_getSolverExecutionTimes(IntPtr rotation);
     /// calculations
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_solve();
@@ -103,6 +104,12 @@ public class DllInterface : MonoBehaviour {
     ///setup/setdown
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_init();
+    [DllImport("PlasticDeformationDll")]
+    private static extern bool dll_initFromFile(string fileName, int length);
+    [DllImport("PlasticDeformationDll")]
+    private static extern bool dll_storeData();
+    [DllImport("PlasticDeformationDll")]
+    private static extern bool dll_storeData(string fileName, int length);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setFileName(string name, int length);
     [DllImport("PlasticDeformationDll")]
@@ -123,8 +130,6 @@ public class DllInterface : MonoBehaviour {
     private static extern void dll_setPlasticity(float plasticity);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setCollisions(int[] collisions, int collisionCount);
-
-    
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_teardown();
     /// tests
@@ -132,30 +137,35 @@ public class DllInterface : MonoBehaviour {
     private static extern int dll_getDebugInt();
     [DllImport("PlasticDeformationDll")]
     private static extern float dll_getDebugFloat();
-    /*[DllImport("PlasticDeformationDll")]
-    private static extern void dll_testVectorRotation(IntPtr outputRotated, IntPtr outputUnrotated, IntPtr baseRotArrPtr, Vector3 vector, Vector3 rotation);
-    [DllImport("PlasticDeformationDll")]
-    private static extern bool dll_testVertexAABoxIntersection(Vector3 vertex, Vector3 cPos, Vector3 cSize);
-    [DllImport("PlasticDeformationDll")]
-    private static extern bool dll_testEqualityVertices(Vector3[] vertices, int vertCount);
-    [DllImport("PlasticDeformationDll")]
-    private static extern bool dll_testEqualityTetrahedra(int[] tets, int tetCount);
-    [DllImport("PlasticDeformationDll")]
-    private static extern bool dll_testEqualitySurfaceVertexIndeces(int[] surfVerts, int vertCount);
-    [DllImport("PlasticDeformationDll")]
-    private static extern bool dll_testEqualitySurfaceTriangles(int[] tris, int triCount);
-    [DllImport("PlasticDeformationDll")]
-    private static extern bool dll_testEqualityConstraints(int[] vertexIds, int vertexIdCount, float[] currentValues, float[] restValues, EConstraintType[] constraintTypes, int constraintCount);
-    [DllImport("PlasticDeformationDll")]
-    private static extern int dll_getConstraintPerVertexCount(int id);
-    [DllImport("PlasticDeformationDll")]
-    private static extern void dll_getConstraintPerVertex(int id, IntPtr output);*/
+    
     #endregion region DLL definition
 
     private void Awake() {
         singleton = this;
-
         collisions = new List<int>();
+        initializeDLL();
+        //initializeDLLFromFile();
+    }
+
+    void initializeDLLFromFile() {
+        dll_setFileName(fileName, fileName.Length);
+        dll_setFilePath(filePath, filePath.Length);
+        // enable logging
+        dll_toggleLoggingOn();
+        // set up solver
+        dll_setIterationCount((int)iterationSlider.value);
+        dll_setPlasticity(plasticitySlider.value);
+        string tetmeshFileName = "Chevrolet_Camaro_2.tetMesh";
+        if (dll_initFromFile(tetmeshFileName, tetmeshFileName.Length)) {
+            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            Debug.Log("DLL Initialized!");
+            startSimulation();
+        } else {
+            Debug.Log("ERROR: DLL Initialization failed!");
+        }
+    }   
+
+    void initializeDLL() {
         // set up mesh data
         dll_setFileName(fileName, fileName.Length);
         dll_setFilePath(filePath, filePath.Length);
@@ -168,13 +178,15 @@ public class DllInterface : MonoBehaviour {
         dll_setPlasticity(plasticitySlider.value);
         // intialize dll side and start simulation
         if (dll_init()) {
-            tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
+            dll_storeData();
+            // tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
             Debug.Log("ERROR: DLL Initialization failed!");
         }
+
     }
 
     void Update () {  
@@ -191,7 +203,7 @@ public class DllInterface : MonoBehaviour {
             outputCollisionInfo();
             outputSolverDeltaTime();
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
-            tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
+           // tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
         }
 	}
 
@@ -216,19 +228,30 @@ public class DllInterface : MonoBehaviour {
         dll_solveConstraints();
         outputCollisionInfo();
         outputSolverDeltaTime();
-        tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
+      //  tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
     }
 
     public void projectCollision(int collId) {
         dll_project(collId);
         outputCollisionInfo();
         outputSolverDeltaTime();
-        tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
+      //  tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
     }
 
     public void startSimulation() {
         isSimulating = true;
-        Debug.Log("Start-Up took " + Time.realtimeSinceStartup + " sec");
+        logInitExecutionTimes();
+    }
+
+    private void logInitExecutionTimes() {
+        int[] times = getInitExecutionTimesFromDll();
+        Debug.Log("Init total " + times[0]
+            + " ms, read file: " + times[1]
+            + " ms, generate constraints: " + times[2]
+            + " ms, bc find tet ids: " + times[3]
+            + " ms, bc mapping: " + times[4]
+            + " ms, serialized save: " + times[5]
+            + " ms, serialized load: " + times[6]);
     }
 
     #region setters
@@ -264,35 +287,28 @@ public class DllInterface : MonoBehaviour {
         dll_getBarycentricTetIds(arrPtr);
         return resultArray;
     }
-/*
-    public int[] getConstraintPerVertexFromDll(int vertId) {
-        int[] resultArray = new int[dll_getConstraintPerVertexCount(vertId)];
-        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
-        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
-        dll_getConstraintPerVertex(vertId, arrPtr);
-        return resultArray;
-    }
-    */
-    /*public float[] getTestCurrDistsFromDll() {
-        float[] resultArray = new float[dll_getDeltasCount()];
-        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
-        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
-        dll_getTestCurrDist(arrPtr);
-        return resultArray;
-    }
-    public float[] getTestNewRestsFromDll() {
-        float[] resultArray = new float[dll_getDeltasCount()];
-        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
-        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
-        dll_getTestNewRest(arrPtr);
-        return resultArray;
-    }*/
 
     public float[] getDeltasFromDll() {
         float[] resultArray = new float[dll_getDeltasCount()];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getDeltas(arrPtr);
+        return resultArray;
+    }
+
+    public int[] getInitExecutionTimesFromDll() {
+        int[] resultArray = new int[7];
+        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
+        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
+        dll_getInitExecutionTimes(arrPtr);
+        return resultArray;
+    }
+
+    public int[] getSolverExecutionTimesFromDll() {
+        int[] resultArray = new int[13];
+        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
+        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
+        dll_getSolverExecutionTimes(arrPtr);
         return resultArray;
     }
 
@@ -319,21 +335,21 @@ public class DllInterface : MonoBehaviour {
         return resultArray;
     }
 
-    public Vector3[] getTetMeshSurfaceVerticesFromDll() {
+    /*public Vector3[] getTetMeshSurfaceVerticesFromDll() {
         Vector3[] resultArray = new Vector3[dll_getTetMeshSurfaceVertexCount()];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getTetMeshSurfaceVertices(arrPtr);
         return resultArray;
-    }
-
+    }*/
+/*
     public int[] getTetMeshSurfaceTrianglesFromDll() {
         int[] result = new int[dll_getTetMeshSurfaceTriangleCount()*3];
         GCHandle arrHandle = GCHandle.Alloc(result, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getTetMeshSurfaceTriangles(arrPtr);
         return result;
-    }
+    }*/
 
     public float[] getConstraintRestValuesFromDll() {
         float[] resultArray = new float[dll_getConstraintCount()];
