@@ -274,8 +274,6 @@ public class DllInterface : MonoBehaviour {
             outputCollisionInfo();
             outputSolverDeltaTime();
 
-            
-
             if (useSurfaceToTetMap) {
                 tetMesh.updateCarModel(getSurfaceVerticesFromDll_m());
             } else {
@@ -308,7 +306,7 @@ public class DllInterface : MonoBehaviour {
 
     public void startSimulation() {
         isSimulating = true;
-        logInitTimes();
+        //logInitTimes();
     }
 
     private void logSolverTimes() {
@@ -320,7 +318,7 @@ public class DllInterface : MonoBehaviour {
                 text = timepoint[0]       // total
                 + " " + timepoint[1]            // collision proj
                 + " " + timepoint[2]            // constraint solving
-                //+ " " + timepoint[3]            // bc update
+                + " " + timepoint[3]            // bc update
                 //+ " " + timepoint[4]       // iteration count
                 + "\n";    
             }
