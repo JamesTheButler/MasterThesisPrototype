@@ -20,6 +20,7 @@ public class TetrahedralMesh : MonoBehaviour, ICollisionEventHandler {
 
     // Update the model of the car.
     public void updateCarModel(Vector3[] newVertices) {
+        Debug.Log(carModelGO.GetComponent<MeshFilter>().mesh.vertices.Length);
         carModelGO.GetComponent<MeshFilter>().mesh.vertices = newVertices;
     }
 

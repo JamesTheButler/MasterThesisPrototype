@@ -6,7 +6,6 @@ public class OnValueChangedText : MonoBehaviour {
 
     private Text ValueText;
 
-
     private void Start() {
         ValueText = GetComponent<Text>();
     }

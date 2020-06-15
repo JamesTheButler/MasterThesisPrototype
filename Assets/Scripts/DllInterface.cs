@@ -10,6 +10,8 @@ public class DllInterface : MonoBehaviour {
 
     [SerializeField] private Slider iterationSlider;
     [SerializeField] private Slider plasticitySlider;
+    [SerializeField] private Slider distanceStiffnessSlider;
+    [SerializeField] private Slider volumeStiffnessSlider;
     [SerializeField] private TetrahedralMesh tetMesh;
     [SerializeField] private Text solverDeltaTimeText;
     [SerializeField] private Text collisionCountText;
@@ -18,11 +20,14 @@ public class DllInterface : MonoBehaviour {
     [SerializeField] private string filePath;
     [SerializeField] private string backupFilePath;
     [SerializeField] private string fileName;
-
+    private string storeFileName;
+       
     [SerializeField] private bool useSerialInit = false;
     [SerializeField] private bool useSurfaceToTetMap = false;
     [SerializeField] private bool useInitFromFile = false;
     [SerializeField] private bool useStoreData = false;
+    [SerializeField] private bool useSerialLoop = false;
+   
 
     private static DllInterface singleton;
     public static DllInterface getSingleton() { return singleton; }
@@ -30,7 +35,11 @@ public class DllInterface : MonoBehaviour {
     private int vertCount, tetCount, surfVertCount;
     private bool isSimulating=false;
 
+    private string tetFilePath;
+
     private List<int> collisions;
+
+    private List<int[]> solverTimes;
 
     // DLL Methods
     #region DLL definition
@@ -53,6 +62,10 @@ public class DllInterface : MonoBehaviour {
     //surface data
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_getSurfaceVertices(IntPtr verts);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_getSurfaceVertices_m(IntPtr verts);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_getSurfaceVertices_s(IntPtr verts);
     [DllImport("PlasticDeformationDll")]
     private static extern int dll_getSurfaceVertexCount();
     // barycentric data
@@ -95,12 +108,16 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_solve();
     [DllImport("PlasticDeformationDll")]
+    private static extern void dll_solve_s();
+    [DllImport("PlasticDeformationDll")]
     private static extern void dll_project(int colliderId);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_solveConstraints();
     ///setup/setdown
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_init();
+    [DllImport("PlasticDeformationDll")]
+    private static extern bool dll_init_m();
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_init_S();
     [DllImport("PlasticDeformationDll")]
@@ -112,7 +129,11 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setFileName(string name, int length);
     [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setStoreFileName(string name, int length);
+    [DllImport("PlasticDeformationDll")]
     private static extern void dll_setFilePath(string path, int length);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setTetrahedralizationPath(string path, int length);
     [DllImport("PlasticDeformationDll")]
     private static extern bool dll_readTetMeshFiles(string fileName);
     [DllImport("PlasticDeformationDll")]
@@ -128,6 +149,10 @@ public class DllInterface : MonoBehaviour {
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_setPlasticity(float plasticity);
     [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setDistanceStiffness(float stiffness);
+    [DllImport("PlasticDeformationDll")]
+    private static extern void dll_setVolumeStiffness(float stiffness);    
+    [DllImport("PlasticDeformationDll")]
     private static extern void dll_setCollisions(int[] collisions, int collisionCount);
     [DllImport("PlasticDeformationDll")]
     private static extern void dll_teardown();
@@ -142,34 +167,54 @@ public class DllInterface : MonoBehaviour {
     private void Awake() {
         singleton = this;
         collisions = new List<int>();
-        if(useInitFromFile)
+        solverTimes = new List<int[]>();
+        
+        storeFileName = fileName;
+        if (useSurfaceToTetMap)
+            storeFileName += "s2t";
+
+        tetFilePath = filePath + "Tetrahedralization/PerformanceTests/1244/";
+
+        if (useInitFromFile)
             initializeDLLFromFile();
         else
             initializeDLL();
+        Debug.Log("done");
     }
+
 
     void initializeDLLFromFile() {
         dll_setFileName(fileName, fileName.Length);
+        dll_setStoreFileName(storeFileName, storeFileName.Length);
         dll_setFilePath(filePath, filePath.Length);
+        Debug.Log(tetFilePath);
+        dll_setTetrahedralizationPath(tetFilePath, tetFilePath.Length);
         // enable logging
         dll_toggleLoggingOn();
         // set up solver
         dll_setIterationCount((int)iterationSlider.value);
         dll_setPlasticity(plasticitySlider.value);
-        string tetmeshFileName = fileName+".tetMesh";
+        dll_setDistanceStiffness(distanceStiffnessSlider.value);
+        dll_setVolumeStiffness(volumeStiffnessSlider.value);
+        string tetmeshFileName = storeFileName+".tetMesh";
         if (dll_initFromFile(tetmeshFileName, tetmeshFileName.Length)) {
             tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            Debug.Log("float "+dll_getDebugFloat());
+            Debug.Log("int "+dll_getDebugInt());
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
             Debug.Log("ERROR: DLL Initialization failed!");
         }
-    }   
+    }
 
     void initializeDLL() {
         // set up mesh data
         dll_setFileName(fileName, fileName.Length);
+        dll_setStoreFileName(storeFileName, storeFileName.Length);
         dll_setFilePath(filePath, filePath.Length);
+        Debug.Log(tetFilePath);
+        dll_setTetrahedralizationPath(tetFilePath, tetFilePath.Length);
         // enable logging
         dll_toggleLoggingOn();
         // set surface mesh data
@@ -177,27 +222,40 @@ public class DllInterface : MonoBehaviour {
         // set up solver
         dll_setIterationCount((int)iterationSlider.value);
         dll_setPlasticity(plasticitySlider.value);
+        dll_setDistanceStiffness(distanceStiffnessSlider.value);
+        dll_setVolumeStiffness(volumeStiffnessSlider.value);
         // intialize dll side and start simulation
         bool isInitSuccess = false;
-        if (useSerialInit)
+        if (useSerialInit) {
+            Debug.Log("Serial Init");
             isInitSuccess = dll_init_S();
-        else
+        } else if (useSurfaceToTetMap) {
+            Debug.Log("Parallel Init with Map");
+            isInitSuccess = dll_init_m();
+        } else {
+            Debug.Log("Parallel Init");
             isInitSuccess = dll_init();
-
+        }
         if (isInitSuccess) {
-            if(useStoreData)
+            if (useStoreData) {
+                Debug.Log("Store Data");
                 dll_storeData();
+            }
             // tetMesh.setTetMeshSurface(getTetMeshSurfaceVerticesFromDll(), getTetMeshSurfaceTrianglesFromDll());
-            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            if (useSurfaceToTetMap) {
+                tetMesh.updateCarModel(getSurfaceVerticesFromDll_m());
+            } else {
+                tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            }
+
             Debug.Log("DLL Initialized!");
             startSimulation();
         } else {
             Debug.Log("ERROR: DLL Initialization failed!");
         }
-
     }
 
-    void Update () {  
+    void Update () {
         if (isSimulating) {
             // update transforms of the tet mesh
             Vector3 translation, rotation;
@@ -206,24 +264,36 @@ public class DllInterface : MonoBehaviour {
             // set current collisions
             dll_setCollisions(collisions.ToArray(), collisions.Count);
             collisions.Clear();
-            // call dll solve
-            dll_solve();
+            if (useSerialLoop) {
+                dll_solve_s();
+            } else {
+                dll_solve();
+            }
             outputCollisionInfo();
             outputSolverDeltaTime();
-            tetMesh.updateCarModel(getSurfaceVerticesFromDll());
-           // tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
+
+            if (useSerialLoop)
+                tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+
+            if (useSurfaceToTetMap) {
+                tetMesh.updateCarModel(getSurfaceVerticesFromDll_m());
+            } else {
+                tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            }
+            // tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
+            List<int> temp = new List<int>(getSolverExecutionTimesFromDll());
+            temp.Add((int)iterationSlider.value);
+            solverTimes.Add(temp.ToArray());
         }
 	}
 
     private void OnDestroy() {
+        logSolverTimes();
         dll_teardown();
     }
 
     public void addCollision(int id) {
         collisions.Add(id);
-    }
-
-    private void setCollisions() {
     }
 
     // Passes surface vertices to the dll.
@@ -232,42 +302,52 @@ public class DllInterface : MonoBehaviour {
         dll_setSurfaceVertices(surfaceVerts, surfaceVerts.Length);
     }
 
-    public void solveConstraints() {
-        dll_solveConstraints();
-        outputCollisionInfo();
-        outputSolverDeltaTime();
-      //  tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
-    }
-
-    public void projectCollision(int collId) {
-        dll_project(collId);
-        outputCollisionInfo();
-        outputSolverDeltaTime();
-      //  tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
-    }
-
     public void startSimulation() {
         isSimulating = true;
-        logExecutionTimes();
+        logInitTimes();
     }
 
-    private void logExecutionTimes() {
+    private void logSolverTimes() {
+        string path = filePath + @"\Logs\times" + storeFileName + ".log";
+        string text="";
+        File.AppendAllText(path,"");
+        foreach (int[] timepoint in solverTimes) {
+            if (timepoint[0] != 0){
+                text = timepoint[0]       // total
+                + " " + timepoint[1]            // collision proj
+                + " " + timepoint[2]            // constraint solving
+                + " " + timepoint[3]            // dc update
+                + " " + timepoint[4] + "\n";    // iteration count
+            }
+            File.AppendAllText(path, text);
+        }
+    }
+
+    private void logInitTimes() {
         int[] times = getInitExecutionTimesFromDll();
-        string text = "Init total " + times[0]
-            + " ms, read file: " + times[1]
-            + " ms, generate constraints: " + times[2]
-            + " ms, bc find tet ids: " + times[3]
-            + " ms, bc mapping: " + times[4]
-            + " ms, serialized save: " + times[5]
-            + " ms, serialized load: " + times[6]+"\n";
+        string text = times[0]      // total
+            + " " + times[1]        // read file
+            + " " + times[2]        // constraint gen
+            + " " + times[3]        // find tet ids
+            + " " + times[4]        // bcc mapping
+            + " " + times[5]        // save
+            + " " + times[6]+"\n";  // load
         Debug.Log(text);
-        string path = @"F:\Eigene Dateien\Studium\Master Schweden\9 Master Thesis\Practical\MasterThesisPrototype\Logs\times.log";
+        string path = filePath+ @"\Logs\inittimes.log";
         File.AppendAllText(path, text);
     }
 
     #region setters
     public void setPlasticity(float plasticity) {
         dll_setPlasticity(plasticity);
+    }
+
+    public void setDistanceStiffness(float stiffness) {
+        dll_setDistanceStiffness(stiffness);
+    }
+
+    public void setVolumeStiffness(float stiffness) {
+        dll_setVolumeStiffness(stiffness);
     }
 
     public void setIteration(float iterationCount) {
@@ -316,7 +396,7 @@ public class DllInterface : MonoBehaviour {
     }
 
     public int[] getSolverExecutionTimesFromDll() {
-        int[] resultArray = new int[13];
+        int[] resultArray = new int[4];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getSolverExecutionTimes(arrPtr);
@@ -338,11 +418,29 @@ public class DllInterface : MonoBehaviour {
         return resultArray;
     }
 
+
+    public Vector3[] getSurfaceVerticesFromDll_m() {
+        Vector3[] resultArray = new Vector3[dll_getSurfaceVertexCount()];
+        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
+        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
+        dll_getSurfaceVertices_m(arrPtr);
+        return resultArray;
+    }
+
+
     public Vector3[] getSurfaceVerticesFromDll() {
         Vector3[] resultArray = new Vector3[dll_getSurfaceVertexCount()];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
         dll_getSurfaceVertices(arrPtr);
+        return resultArray;
+    }
+
+    public Vector3[] getSurfaceVerticesFromDll_serial() {
+        Vector3[] resultArray = new Vector3[dll_getSurfaceVertexCount()];
+        GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
+        IntPtr arrPtr = arrHandle.AddrOfPinnedObject();
+        dll_getSurfaceVertices_s(arrPtr);
         return resultArray;
     }
 
