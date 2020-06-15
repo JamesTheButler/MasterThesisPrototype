@@ -172,14 +172,15 @@ public class DllInterface : MonoBehaviour {
         storeFileName = fileName;
         if (useSurfaceToTetMap)
             storeFileName += "s2t";
+        else if (useSerialLoop)
+            storeFileName += "serial";
 
-        tetFilePath = filePath + "Tetrahedralization/PerformanceTests/1244/";
+        tetFilePath = filePath + "Tetrahedralization/PerformanceTests/371/";
 
         if (useInitFromFile)
             initializeDLLFromFile();
         else
             initializeDLL();
-        Debug.Log("done");
     }
 
 
@@ -248,7 +249,7 @@ public class DllInterface : MonoBehaviour {
                 tetMesh.updateCarModel(getSurfaceVerticesFromDll());
             }
 
-            Debug.Log("DLL Initialized!");
+            Debug.Log("DLL Initialized");
             startSimulation();
         } else {
             Debug.Log("ERROR: DLL Initialization failed!");
@@ -266,21 +267,24 @@ public class DllInterface : MonoBehaviour {
             collisions.Clear();
             if (useSerialLoop) {
                 dll_solve_s();
+                //Debug.Log("serial loop");
             } else {
                 dll_solve();
             }
             outputCollisionInfo();
             outputSolverDeltaTime();
 
-            if (useSerialLoop)
-                tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+            
 
             if (useSurfaceToTetMap) {
                 tetMesh.updateCarModel(getSurfaceVerticesFromDll_m());
             } else {
-                tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+                if (useSerialLoop) {
+                    tetMesh.updateCarModel(getSurfaceVerticesFromDll_s());
+                } else {
+                    tetMesh.updateCarModel(getSurfaceVerticesFromDll());
+                }
             }
-            // tetMesh.updateSurfaceModel(getTetMeshSurfaceVerticesFromDll());
             List<int> temp = new List<int>(getSolverExecutionTimesFromDll());
             temp.Add((int)iterationSlider.value);
             solverTimes.Add(temp.ToArray());
@@ -308,7 +312,7 @@ public class DllInterface : MonoBehaviour {
     }
 
     private void logSolverTimes() {
-        string path = filePath + @"\Logs\times" + storeFileName + ".log";
+        string path = filePath + @"\Logs\Solver\"+storeFileName+".log";
         string text="";
         File.AppendAllText(path,"");
         foreach (int[] timepoint in solverTimes) {
@@ -316,8 +320,9 @@ public class DllInterface : MonoBehaviour {
                 text = timepoint[0]       // total
                 + " " + timepoint[1]            // collision proj
                 + " " + timepoint[2]            // constraint solving
-                + " " + timepoint[3]            // dc update
-                + " " + timepoint[4] + "\n";    // iteration count
+                //+ " " + timepoint[3]            // bc update
+                //+ " " + timepoint[4]       // iteration count
+                + "\n";    
             }
             File.AppendAllText(path, text);
         }
@@ -332,7 +337,7 @@ public class DllInterface : MonoBehaviour {
             + " " + times[4]        // bcc mapping
             + " " + times[5]        // save
             + " " + times[6]+"\n";  // load
-        Debug.Log(text);
+        //Debug.Log(text);
         string path = filePath+ @"\Logs\inittimes.log";
         File.AppendAllText(path, text);
     }
@@ -436,7 +441,7 @@ public class DllInterface : MonoBehaviour {
         return resultArray;
     }
 
-    public Vector3[] getSurfaceVerticesFromDll_serial() {
+    public Vector3[] getSurfaceVerticesFromDll_s() {
         Vector3[] resultArray = new Vector3[dll_getSurfaceVertexCount()];
         GCHandle arrHandle = GCHandle.Alloc(resultArray, GCHandleType.Pinned);
         IntPtr arrPtr = arrHandle.AddrOfPinnedObject();

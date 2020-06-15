@@ -353,7 +353,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.7
+  m_Value: 0.58
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -510,7 +510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &95714859
 Transform:
   m_ObjectHideFlags: 0
@@ -1074,7 +1074,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.5
+  m_Value: 0.65
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -2260,7 +2260,7 @@ MonoBehaviour:
   m_MinValue: 1
   m_MaxValue: 10
   m_WholeNumbers: 1
-  m_Value: 4
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -4175,11 +4175,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 696899384}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &711373121 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100002, guid: 6454c2b5bc0ef534dbec59c3f40b59ad,
-    type: 3}
-  m_PrefabInternal: {fileID: 1986402969}
 --- !u!1 &714879844
 GameObject:
   m_ObjectHideFlags: 0
@@ -4208,7 +4203,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 714879844}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.2059302, y: 0, z: -22.24}
+  m_LocalPosition: {x: -4.67, y: 0, z: -8.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 737568471}
@@ -4535,12 +4530,12 @@ MonoBehaviour:
   filePath: F:/Eigene Dateien/Studium/Master Schweden/9 Master Thesis/Practical/MasterThesisPrototype/
   backupFilePath: hweden/9 Master Thesis/MasterThesisPrototype//Master Schweden/9
     Master Thesis/MasterThesisPrototype/
-  fileName: car5k_1244
+  fileName: car50k_371
   useSerialInit: 0
   useSurfaceToTetMap: 0
-  useInitFromFile: 1
+  useInitFromFile: 0
   useStoreData: 0
-  useSerialLoop: 0
+  useSerialLoop: 1
 --- !u!4 &815992157
 Transform:
   m_ObjectHideFlags: 0
@@ -4566,7 +4561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carGO: {fileID: 389122559}
-  carModelGO: {fileID: 711373121}
+  carModelGO: {fileID: 1624266753}
   tetMeshGameObject: {fileID: 1775580026}
   surfaceMeshGO: {fileID: 2054822675}
 --- !u!1 &848486764
@@ -7167,7 +7162,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1447710025}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.58, y: 1, z: -33.93}
+  m_LocalPosition: {x: -1.58, y: 1, z: -21}
   m_LocalScale: {x: 17.173727, y: 5.2366, z: 4.300572}
   m_Children: []
   m_Father: {fileID: 262645766}
@@ -8043,6 +8038,11 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1624266753 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100002, guid: ac362da1f605ac04d8b9249d369f3466,
+    type: 3}
+  m_PrefabInternal: {fileID: 417905585}
 --- !u!1 &1648458934
 GameObject:
   m_ObjectHideFlags: 0
