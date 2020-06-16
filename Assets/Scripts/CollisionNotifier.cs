@@ -6,7 +6,7 @@ public class CollisionNotifier : MonoBehaviour {
 
     private List<ICollisionEventHandler> listeners;
 
-    private void Start() {
+    private void Awake() {
         listeners = new List<ICollisionEventHandler>(attachedObject.GetComponents<ICollisionEventHandler>());
     }
 
