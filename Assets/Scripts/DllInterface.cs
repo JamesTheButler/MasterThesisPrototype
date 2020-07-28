@@ -295,8 +295,8 @@ public class DllInterface : MonoBehaviour {
             temp.Add((int)iterationSlider.value);
             solverTimes.Add(temp.ToArray());
         }
-        Debug.Log(getDebugVecFromDll());
-        Debug.Log(dll_getDebugInt());
+        //Debug.Log(getDebugVecFromDll());
+        //Debug.Log(dll_getDebugInt());
 	}
 
     private void OnDestroy() {
