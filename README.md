@@ -11,6 +11,7 @@ tetrahedral mesh given a set of colliders and the meshes position in space. Defo
 displayed on screen for the user.
 
 
+
 This project encompasses a Unity project that prompts the deformation library each frame for the deformation calculations. This makes use of Unity's rendering capabilities, while
 using the library for the computationally more complex deformation computations. The deformation library implements simulation based dynamics and is run 
 entirely on the CPU. It can compute frames within 10 milliseconds.
