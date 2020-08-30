@@ -1,6 +1,8 @@
-{"project_id" : "MasterThesis",
-"project_name" : "Master Thesis: Real-time Plastic Deformation",
-"project_description" : "The prototype that was developed as part of my master thesis in Game Design and Technology.",
-"tags" : "Unity3D,C#,C++,Paralell Programming",
-"image_uri" : "media/githubio.gif",
-"href_name" : "Main Project"}
+{
+	"project_id": "MasterThesis",
+	"project_name": "Master Thesis: Real-time Plastic Deformation",
+	"project_description": "The prototype that was developed as part of my master thesis in Game Design and Technology.",
+	"tags": "Unity3D,C#,C++,Paralell Programming",
+	"image_uri": "media/githubio.gif",
+	"href_name": "Main Project"
+}
