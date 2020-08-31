@@ -1,8 +1,8 @@
 {
 	"project_id": "MasterThesis",
-	"project_name": "Master Thesis: Real-time Plastic Deformation",
+	"project_name": "Real-time Plastic Deformation",
 	"project_description": "The prototype that was developed as part of my master thesis in Game Design and Technology. Consists of a Unity project and a physics dll.",
-	"tags": "Unity3D,C#,C++,Paralell Programming",
+	"tags": "Unity3D, C#, C++, Multithreading",
 	"image_uri": "media/githubio.png",
 	"href_name": "Project"
 }
